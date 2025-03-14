@@ -2,21 +2,21 @@ package com.example.surveillance.services;
 
 
 import com.example.surveillance.entity.Matiere;
-import com.example.surveillance.repositories.MatiereRepositories;
+import com.example.surveillance.repositories.MatiereRepositoriy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class MatiereService {
-    private final MatiereRepositories matiereRepositories;
+    private final MatiereRepositoriy matiereRepositoriy;
 
-    public MatiereService(MatiereRepositories matiereRepositories) {
-        this.matiereRepositories = matiereRepositories;
+    public MatiereService(MatiereRepositoriy matiereRepositoriy) {
+        this.matiereRepositoriy = matiereRepositoriy;
     }
 
 
     public List<Matiere> getAllMatieres() {
-        return this.matiereRepositories.findAll();
+        return this.matiereRepositoriy.findAll();
     }
 }

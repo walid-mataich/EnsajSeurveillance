@@ -3,6 +3,7 @@ package com.example.surveillance.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -18,6 +19,9 @@ public class Matiere {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idMatiere;
     private String nomMatiere;
+
+    @NotBlank(message = "le niveau est necessaire (1 ou 2)")
+    private int niveau;
 
     // Relation ManyToOne : Chaque matière a un seul chef de module
     @ManyToOne

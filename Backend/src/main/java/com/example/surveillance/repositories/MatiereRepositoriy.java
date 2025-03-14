@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 
 
 @Repository
-public interface MatiereRepositories extends JpaRepository<Matiere,Integer> {
+public interface MatiereRepositoriy extends JpaRepository<Matiere,Integer> {
 
 }
