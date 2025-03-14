@@ -1,4 +1,4 @@
-package com.springboot.chatbot.dto;
+package com.example.surveillance.dto;
 
 import java.util.List;
 

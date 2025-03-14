@@ -1,4 +1,4 @@
-package com.springboot.chatbot.config;
+package com.example.surveillance.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
