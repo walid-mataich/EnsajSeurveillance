@@ -35,9 +35,9 @@ public class Matiere {
     private Surveillant chefDeModule;  // Le chef de module responsable de la matière
 
 
-    @OneToMany(mappedBy = "matiere")
-    @JsonManagedReference("matiere-examen")
-    private List<Examen> examens;
+//    @OneToMany(mappedBy = "matiere")
+//    @JsonManagedReference("matiere-examen")
+//    private List<Examen> examens;
 
     public Matiere(Surveillant chefDeModule) {
         this.chefDeModule = chefDeModule;

@@ -55,7 +55,6 @@ public class Surveillant {
 
 
 
-
 //    @OneToMany(mappedBy = "chefDeModule")
 //    @JsonManagedReference("surveillant-matiere")
 //    private List<Matiere> matieres;

@@ -3,6 +3,8 @@ import CountUp from "../components/Count";
 import Matieres from "../components/Matiere";
 import Sidebar from "../components/Sidebar";
 import ExamenForm from "../components/ExamenForm";
+import Planning from "../components/Planning";
+import ExamSchedule from "../components/ExamSchedule";
 
 import { PieChart } from "@mui/x-charts";
 import { useState, useEffect, useRef } from "react";
@@ -10,11 +12,15 @@ import { useState, useEffect, useRef } from "react";
 function AdminDashboard() {
   return (
     <>
-        <Sidebar />
+      <Sidebar />
+      {/*  */}
+
+      <div className="p-6 sm:ml-64">
+        <ExamSchedule />
         <div className="flex-1 flex items-center justify-center p-6">
           <ExamenForm />
         </div>
-
+      </div>
 
       {/* <div class="p-4 sm:ml-64">
         <div>

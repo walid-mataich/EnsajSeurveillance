@@ -45,9 +45,8 @@ public class Examen {
 
 
 
-    @ManyToOne()
-    @JsonBackReference("matiere-examen")
-    @JoinColumn(name = "idMatiere")
+    @ManyToOne
+    @JoinColumn(name = "matier_id")
     private Matiere matiere;
 
     public Examen(LocalDate jour,LocalTime debut, LocalTime fin,Matiere matiere) {
