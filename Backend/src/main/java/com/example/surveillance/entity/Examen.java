@@ -5,10 +5,13 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 
@@ -18,13 +21,16 @@ import java.util.List;
 public class Examen {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int idExamen;
+    private Long idExamen;
 
-    @NotBlank(message = "la date de debut est necessaire")
-    private Timestamp debut;
+    @NotNull (message = "le jour est necessaire")
+    private LocalDate jour;
 
-    @NotBlank(message = "la date de fin est necessaire")
-    private Timestamp fin;
+    @NotNull(message = "la date de debut est necessaire")
+    private LocalTime debut;
+
+    @NotNull(message = "la date de fin est necessaire")
+    private LocalTime fin;
 
 
     @OneToMany(mappedBy = "examen")
@@ -39,12 +45,13 @@ public class Examen {
 
 
 
-    @ManyToOne
+    @ManyToOne()
     @JsonBackReference("matiere-examen")
     @JoinColumn(name = "idMatiere")
     private Matiere matiere;
 
-    public Examen(Timestamp debut, Timestamp fin,Matiere matiere) {
+    public Examen(LocalDate jour,LocalTime debut, LocalTime fin,Matiere matiere) {
+        this.jour = jour;
         this.debut = debut;
         this.fin = fin;
         this.matiere = matiere;

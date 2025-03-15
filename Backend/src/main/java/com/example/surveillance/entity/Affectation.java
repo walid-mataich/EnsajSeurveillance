@@ -25,15 +25,11 @@ public class Affectation {
     private Surveillant surveillant;
 
     @ManyToOne
-    @JsonBackReference("salle-affectation")
+    @JsonBackReference("salle-Affectation")
     @JoinColumn(name = "idSalle")
     private Salle salle;
 
-    public Affectation(Examen examen, Surveillant surveillant,Salle salle){
-        this.examen = examen;
-        this.surveillant = surveillant;
-        this.salle = salle;
-    }
+
 
 
 }

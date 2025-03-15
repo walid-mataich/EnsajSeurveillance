@@ -2,18 +2,21 @@ import React from "react";
 import CountUp from "../components/Count";
 import Matieres from "../components/Matiere";
 import Sidebar from "../components/Sidebar";
+import ExamenForm from "../components/ExamenForm";
 
 import { PieChart } from "@mui/x-charts";
 import { useState, useEffect, useRef } from "react";
 
 function AdminDashboard() {
-  
-
   return (
     <>
-      <Sidebar />
-       
-        {/* <div class="p-4 sm:ml-64">
+        <Sidebar />
+        <div className="flex-1 flex items-center justify-center p-6">
+          <ExamenForm />
+        </div>
+
+
+      {/* <div class="p-4 sm:ml-64">
         <div>
           <div className="text-center ml-auto m-10  rounded-md p-9 ">
             <h1 className="text-2xl font-bold">Types des surveillants</h1>
