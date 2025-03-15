@@ -23,6 +23,10 @@ public class ChatService {
     @Value("${openapi.api.key}")
     private String apiKey;
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 0d8620b3a3db6b3c665aeb01c563e8147bc3dd86
 
     @Value("${openapi.api.model}")
     private String model;
