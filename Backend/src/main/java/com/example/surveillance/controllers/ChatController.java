@@ -16,9 +16,10 @@ public class ChatController {
     public ChatController(ChatService chatService) {
         this.chatService = chatService;
     }
-//test
+
     @PostMapping
     public String chat(@RequestBody PromptRequest promptRequest) {
         return chatService.getChatResponse(promptRequest);
     }
 }
+
