@@ -2,6 +2,7 @@ package com.example.surveillance.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -26,9 +27,10 @@ public class Matiere {
     @NotBlank(message = "le niveau est necessaire (1 ou 2)")
     private int niveau;
 
+
     // Relation ManyToOne : Chaque matière a un seul chef de module
+
     @ManyToOne
-    @JsonBackReference("surveillant-matiere")
     @JoinColumn(name = "chef_de_modeule_id")  // La clé étrangère dans la table Matiere
     private Surveillant chefDeModule;  // Le chef de module responsable de la matière
 
