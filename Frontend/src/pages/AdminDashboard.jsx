@@ -13,19 +13,10 @@ import { useState, useEffect, useRef } from "react";
 function AdminDashboard() {
   return (
     <>
-      <Sidebar />
-      {/*  */}
-
-      <div className="p-6 sm:ml-64">
-        <ExamSchedule />
-        <div className="flex-1 flex items-center justify-center p-6">
-          <ExamenForm />
-        </div>
-      </div>
-      <ChatBot/>
+      
 
 
-      {/* <div class="p-4 sm:ml-64">
+      <div class="p-4 sm:ml-64">
         <div>
           <div className="text-center ml-auto m-10  rounded-md p-9 ">
             <h1 className="text-2xl font-bold">Types des surveillants</h1>
@@ -69,7 +60,7 @@ function AdminDashboard() {
         </div>
         <Matieres />
         </div>
-      */}
+     
     </>
   );
 }

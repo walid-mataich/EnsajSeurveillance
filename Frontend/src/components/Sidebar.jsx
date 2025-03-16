@@ -10,7 +10,9 @@ import {
 } from "lucide-react";
 import SidebarItem from "./SidebarItem";
 
-const Sidebar = ({ setSelectedTab }) => {
+const Sidebar = () => {
+
+  
   const [isOpen, setIsOpen] = useState(false);
   const sidebarRef = useRef(null);
 
@@ -52,22 +54,27 @@ const Sidebar = ({ setSelectedTab }) => {
           </div>
 
           <ul className="space-y-2 font-medium">
-            <SidebarItem text="Dashboard" onClick={() => setSelectedTab("Dashboard")}>
+            <SidebarItem text="Dashboard" path="/admin/dashboard" >
               <LayoutDashboardIcon />
             </SidebarItem>
-            <SidebarItem text="Examens" onClick={() => setSelectedTab("Examens")}>
+
+            <SidebarItem text="Examens" path="/admin/examens">
               <NotebookPen />
             </SidebarItem>
-            <SidebarItem text="Surveilants" onClick={() => setSelectedTab("Surveilants")}>
+
+            <SidebarItem text="Surveilants" path="/admin/Surveillants">
               <Users />
             </SidebarItem>
-            <SidebarItem text="Assignation" onClick={() => setSelectedTab("Assignation")}>
+
+            <SidebarItem text="Assignation" path="/admin/Assignation">
               <SquarePen />
             </SidebarItem>
-            <SidebarItem text="Notification" onClick={() => setSelectedTab("Notification")}>
+
+            <SidebarItem text="Notification" path="/admin/Notif">
               <BellRing />
             </SidebarItem>
-            <SidebarItem text="Profile" onClick={() => setSelectedTab("Profile")}>
+
+            <SidebarItem text="Profile" path="/admin/profile">
               <CircleUser />
             </SidebarItem>
           </ul>
