@@ -5,6 +5,7 @@ import Sidebar from "../components/Sidebar";
 import ExamenForm from "../components/ExamenForm";
 import Planning from "../components/Planning";
 import ExamSchedule from "../components/ExamSchedule";
+import ChatBot from "../components/Chatbot";
 
 import { PieChart } from "@mui/x-charts";
 import { useState, useEffect, useRef } from "react";
@@ -21,6 +22,8 @@ function AdminDashboard() {
           <ExamenForm />
         </div>
       </div>
+      <ChatBot/>
+
 
       {/* <div class="p-4 sm:ml-64">
         <div>

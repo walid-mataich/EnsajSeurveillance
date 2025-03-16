@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import SidebarItem from "./SidebarItem";
 
-const Sidebar = () => {
+const Sidebar = ({ setSelectedTab }) => {
   const [isOpen, setIsOpen] = useState(false);
   const sidebarRef = useRef(null);
 
@@ -52,33 +52,27 @@ const Sidebar = () => {
           </div>
 
           <ul className="space-y-2 font-medium">
-            <SidebarItem text="Dashboard">
+            <SidebarItem text="Dashboard" onClick={() => setSelectedTab("Dashboard")}>
               <LayoutDashboardIcon />
             </SidebarItem>
-
-            <SidebarItem text="Examens">
+            <SidebarItem text="Examens" onClick={() => setSelectedTab("Examens")}>
               <NotebookPen />
             </SidebarItem>
-
-            <SidebarItem text="Surveilants">
+            <SidebarItem text="Surveilants" onClick={() => setSelectedTab("Surveilants")}>
               <Users />
             </SidebarItem>
-
-            <SidebarItem text="Assignation">
+            <SidebarItem text="Assignation" onClick={() => setSelectedTab("Assignation")}>
               <SquarePen />
             </SidebarItem>
-
-            <SidebarItem text="Notification">
+            <SidebarItem text="Notification" onClick={() => setSelectedTab("Notification")}>
               <BellRing />
             </SidebarItem>
-
-            <SidebarItem text="Profile">
+            <SidebarItem text="Profile" onClick={() => setSelectedTab("Profile")}>
               <CircleUser />
             </SidebarItem>
           </ul>
         </div>
       </aside>
-      
     </>
   );
 };

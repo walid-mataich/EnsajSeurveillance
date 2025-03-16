@@ -1,0 +1,124 @@
+import React, { useState, useEffect, useRef } from "react";
+import axios from "axios";
+import api from "../api/axios";
+
+const ChatBot = () => {
+  const [input, setInput] = useState("");
+  const [messages, setMessages] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const chatEndRef = useRef(null);
+
+  const sendMessage = async () => {
+    if (!input.trim()) return;
+
+    const userMessage = { text: input, sender: "user" };
+    setMessages((prev) => [...prev, userMessage]);
+    setInput("");
+    setLoading(true);
+
+    try {
+      const res = await api.post(
+        "/api/chat",
+        { prompt: input },
+        { headers: { "Content-Type": "application/json" } }
+      );
+
+      const botMessage = { text: res.data, sender: "bot" };
+      setMessages((prev) => [...prev, botMessage]);
+    } catch (error) {
+      console.error("Error fetching response", error);
+      setMessages((prev) => [
+        ...prev,
+        { text: "Error retrieving response", sender: "bot" },
+      ]);
+    }
+
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  return (
+    <div className="fixed bottom-4 right-4 z-50">
+      {/* Toggle Button */}
+      <button
+        className="chatbot-toggle bg-blue-600 text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-110"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <img src="/chat.jpg" alt="Chatbot" className="w-8 h-8 rounded-full" />
+      </button>
+
+      {/* Chatbot Container */}
+      {isOpen && (
+        <div
+          className={`chatbot-container fixed bottom-20 right-4 w-96 bg-white rounded-lg shadow-xl overflow-hidden transform transition-all duration-300 ${
+            isOpen ? "opacity-100 scale-100" : "opacity-0 scale-95"
+          }`}
+        >
+          <div className="chatbot-card flex flex-col h-[400px]">
+            {/* Header */}
+            <div className="chatbot-header bg-blue-600 text-white flex items-center justify-center py-2">
+              <img
+                src="/logo.png"
+                alt="ENSAJ Logo"
+                className="w-20 rounded-full"
+              />
+              {/* <h4 className="ml-2 font-bold">ENSAJ ChatBot</h4> */}
+            </div>
+
+            {/* Body */}
+            <div
+              className="chatbot-body flex-1 p-4 overflow-y-auto bg-no-repeat bg-center bg-cover"
+              style={{ backgroundImage: "url('/ba.jpg')" }}
+            >
+              {messages.map((msg, index) => (
+                <div
+                  key={index}
+                  className={`message mb-2 p-3 rounded-lg max-w-[80%] ${
+                    msg.sender === "user"
+                      ? "bg-blue-600 text-white self-end"
+                      : "bg-gray-300 text-black self-start"
+                  }`}
+                >
+                  {msg.text}
+                </div>
+              ))}
+              {loading && (
+                <div className="message bot flex items-center justify-start">
+                  <div className="spinner-border animate-spin inline-block w-4 h-4 border-2 rounded-full mr-2"></div>
+                  <span>Loading...</span>
+                </div>
+              )}
+              <div ref={chatEndRef}></div>
+            </div>
+
+            {/* Footer */}
+            <div className="chatbot-footer p-2 bg-white border-t border-gray-200">
+              <div className="flex items-center">
+                <input
+                  type="text"
+                  className="chatbot-input flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                  placeholder="Type your message..."
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+                />
+                <button
+                  className="chatbot-send bg-blue-600 text-white p-2 ml-2 rounded-lg hover:bg-blue-700 transition-colors"
+                  onClick={sendMessage}
+                >
+                  Send
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default ChatBot;
