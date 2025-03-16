@@ -32,6 +32,9 @@ public class Examen {
     @NotNull(message = "la date de fin est necessaire")
     private LocalTime fin;
 
+    @NotNull(message = "entrer le nombre de salles")
+    private Integer nbrDesSalles;
+
 
     @OneToMany(mappedBy = "examen")
     @JsonManagedReference("examen-choix")

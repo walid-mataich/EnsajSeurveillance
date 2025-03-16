@@ -6,6 +6,7 @@ const ExamenForm = () => {
   const [jour, setJour] = useState("");
   const [debut, setDebut] = useState("");
   const [fin, setFin] = useState("");
+  const [nbrDesSalles, setNbrDesSalles] = useState(""); // Nouvel état
   const [matieres, setMatieres] = useState([]);
   const [message, setMessage] = useState("");
 
@@ -20,7 +21,7 @@ const ExamenForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const newExamen = { jour, debut, fin };
+    const newExamen = { jour, debut, fin, nbrDesSalles }; // Inclure nbrDesSalles
 
     try {
       await api.post(`/examen/add?matiereId=${matiereId}`, newExamen, {
@@ -30,6 +31,7 @@ const ExamenForm = () => {
       setJour("");
       setDebut("");
       setFin("");
+      setNbrDesSalles(""); // Réinitialiser
       setMatiereId("");
     } catch (error) {
       setMessage("Erreur lors de l'ajout de l'examen.");
@@ -101,6 +103,21 @@ const ExamenForm = () => {
               </option>
             ))}
           </select>
+        </label>
+
+        {/* Ajout du champ "Nombre de Salles" */}
+        <label className="block">
+          <span className="text-lg font-medium text-gray-700">
+            Nombre de Salles
+          </span>
+          <input
+            type="number"
+            value={nbrDesSalles}
+            onChange={(e) => setNbrDesSalles(e.target.value)}
+            required
+            min="1"
+            className="mt-2 block w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+          />
         </label>
 
         <button
