@@ -29,11 +29,13 @@ public class ExamenController {
         Examen savedExamen = examenService.createExamen(examen, matiereId);
         return ResponseEntity.ok(savedExamen);
     }
+
     @CrossOrigin(origins = "*")
     @GetMapping("/all")
     public List<Examen> getAllExamens(){
         return examenService.getAllExamen();
     }
+
     @CrossOrigin(origins = "*")
     @GetMapping("/{id}")
     public ResponseEntity<Examen> getExamenById(@PathVariable Long id){
@@ -41,5 +43,15 @@ public class ExamenController {
         return examen.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    @CrossOrigin("*")
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteExamen(@PathVariable Long id){
+        boolean deleted = examenService.deleteExamenById(id);
+        if (deleted) {
+            return ResponseEntity.ok("examen suprime !");
+        }else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
 }

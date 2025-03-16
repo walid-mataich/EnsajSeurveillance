@@ -21,18 +21,21 @@ const ExamSchedule = () => {
   }, []);
 
   const handleDelete = async (idExamen) => {
-    const confirmDelete = window.confirm("Voulez-vous vraiment supprimer cet examen ?");
+    const confirmDelete = window.confirm(
+      "Voulez-vous vraiment supprimer cet examen ?"
+    );
     if (!confirmDelete) return;
 
     try {
-      await api.delete(`/examen/${idExamen}`);
+      await api.delete(`/examen/delete/${idExamen}`);
       setExams(exams.filter((exam) => exam.idExamen !== idExamen));
     } catch (err) {
       alert("Erreur lors de la suppression");
     }
   };
 
-  if (loading) return <p className="text-center text-gray-600">Chargement...</p>;
+  if (loading)
+    return <p className="text-center text-gray-600">Chargement...</p>;
   if (error) return <p className="text-center text-red-500">{error}</p>;
 
   const groupedExams = exams.reduce((acc, exam) => {
@@ -53,8 +56,15 @@ const ExamSchedule = () => {
           <thead>
             <tr className="bg-gray-200 border border-gray-300">
               {Object.entries(groupedExams).map(([day, exams]) => (
-                <th key={day} className="py-3 px-4 border" colSpan={exams.length}>
-                  {new Date(day).toLocaleDateString("fr-FR", { weekday: "long" })} <br />
+                <th
+                  key={day}
+                  className="py-3 px-4 border"
+                  colSpan={exams.length}
+                >
+                  {new Date(day).toLocaleDateString("fr-FR", {
+                    weekday: "long",
+                  })}{" "}
+                  <br />
                   {day}
                 </th>
               ))}
@@ -74,7 +84,9 @@ const ExamSchedule = () => {
             <tr className="border border-gray-300">
               {Object.entries(groupedExams).map(([day, exams]) =>
                 exams.map((exam) => (
-                  <td key={exam.idExamen} className="py-2 px-4 border">{exam.matiere.nomMatiere}</td>
+                  <td key={exam.idExamen} className="py-2 px-4 border">
+                    {exam.matiere.nomMatiere}
+                  </td>
                 ))
               )}
             </tr>
@@ -82,7 +94,10 @@ const ExamSchedule = () => {
             <tr className="border border-gray-300">
               {Object.entries(groupedExams).map(([day, exams]) =>
                 exams.map((exam) => (
-                  <td key={exam.idExamen} className="py-2 px-4 border text-red-600 font-bold">
+                  <td
+                    key={exam.idExamen}
+                    className="py-2 px-4 border text-red-600 font-bold"
+                  >
                     {exam.matiere.chefDeModule.nom}
                   </td>
                 ))
@@ -113,13 +128,18 @@ const ExamSchedule = () => {
         {Object.entries(groupedExams).map(([day, exams]) => (
           <div key={day} className="bg-white shadow-md rounded-lg mb-4 p-4">
             <h2 className="text-lg font-semibold text-center mb-2">
-              {new Date(day).toLocaleDateString("fr-FR", { weekday: "long" })} - {day}
+              {new Date(day).toLocaleDateString("fr-FR", { weekday: "long" })} -{" "}
+              {day}
             </h2>
             {exams.map((exam) => (
               <div key={exam.idExamen} className="border-t py-2">
-                <p className="text-sm text-gray-600">{exam.debut} - {exam.fin}</p>
+                <p className="text-sm text-gray-600">
+                  {exam.debut} - {exam.fin}
+                </p>
                 <p className="font-medium">{exam.matiere.nomMatiere}</p>
-                <p className="text-red-600 font-bold">{exam.matiere.chefDeModule.nom}</p>
+                <p className="text-red-600 font-bold">
+                  {exam.matiere.chefDeModule.nom}
+                </p>
                 <button
                   onClick={() => handleDelete(exam.idExamen)}
                   className="bg-red-500 text-white px-3 py-1 mt-2 rounded hover:bg-red-700 w-full"

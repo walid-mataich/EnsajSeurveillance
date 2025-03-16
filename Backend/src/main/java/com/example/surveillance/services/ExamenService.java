@@ -38,10 +38,18 @@ public class ExamenService {
     }
 
     public List<Examen> getAllExamen(){
-        return examenRepository.findAll();
+        return examenRepository.findAllByOrderByJourAscDebutAsc();
     }
 
     public Optional<Examen> getExamenById(Long id){
         return examenRepository.findById(id);
+    }
+
+    public boolean deleteExamenById(Long id){
+        if(examenRepository.existsById(id)){
+            examenRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 }
