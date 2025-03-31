@@ -1,9 +1,12 @@
-import React from 'react'
+import React from "react";
+import Cren from "../components/cren";
 
 const Assignation = () => {
   return (
-    <div>Assignation</div>
-  )
-}
+    <>
+      <Cren />
+    </>
+  );
+};
 
-export default Assignation
+export default Assignation;

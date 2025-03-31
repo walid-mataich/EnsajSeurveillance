@@ -2,6 +2,9 @@ import React from "react";
 import CountUp from "../components/Count";
 import Planning from "../components/Planning";
 import ExamSchedule from "../components/ExamSchedule";
+import BarChartOne from "../components/BarChartOne";
+import { Users, School } from "lucide-react";
+import ExamProgress from "../components/ExamProgress";
 
 import Countdown from "react-countdown";
 
@@ -12,9 +15,9 @@ function AdminDashboard() {
   return (
     <>
       <div className="flex flex-wrap justify-center gap-4">
-                <div className="min-w-[300px]  flex-2 h-100 bg-indigo-200 rounded-md flex flex-col gap-6 justify-center items-center">
+        <div className="min-w-[300px]  flex-2 h-100 bg-neutral-50 rounded-md shadow-md flex flex-col gap-6 justify-center items-center">
           <h1 className="text-2xl font-bold ">types des surveillants</h1>
-          <PieChart
+          {/* <PieChart
               series={[
                 {
                   data: [
@@ -26,11 +29,15 @@ function AdminDashboard() {
               ]}
               width={400}
               height={200}
-            />
+            /> */}
 
+          <BarChartOne />
         </div>
-        <div className="min-w-[150px] max-w-[300px] flex-1 h-52 bg-indigo-200 rounded-md flex flex-col gap-6 justify-center items-center">
-          <h1 className="text-2xl font-bold ">Nombre des examens</h1>
+        <div className="min-w-[150px] max-w-[300px] flex-1 h-52 bg-neutral-50 shadow-md rounded-md flex flex-col gap-6 justify-center items-center">
+          <h1 className="text-2xl font-bold text-center ">
+            <School />
+            Nombre des examens
+          </h1>
           <CountUp
             from={0}
             to={12}
@@ -40,21 +47,25 @@ function AdminDashboard() {
             className="count-up-text text-5xl font-bold "
           />
         </div>
-        <div className="min-w-[150px] max-w-[300px] flex-1 h-52 bg-indigo-200 rounded-md flex flex-col gap-6 justify-center items-center">
-          <h1 className="text-2xl font-bold ">Nombre des surveillants</h1>
+        <div className="min-w-[150px] max-w-[300px] flex-1 h-52 bg-neutral-50 shadow-md rounded-md flex flex-col gap-6 justify-center items-center">
+          <h1 className="text-2xl font-bold ">
+            <Users />
+            Nbr des surveillants
+          </h1>
           <CountUp
             from={0}
-            to={12}
+            to={64}
             separator=","
             direction="up"
             duration={1}
             className="count-up-text text-5xl font-bold "
           />
         </div>
-
-
 
       </div>
+      {/* <div className="min-w-[150px] max-w-[300px] flex-1 h-52 bg-neutral-50 shadow-md rounded-md flex flex-col gap-6 justify-center items-center">
+          <ExamProgress completed={8} total={12}/>
+        </div> */}
 
       {/* <Countdown/> */}
 

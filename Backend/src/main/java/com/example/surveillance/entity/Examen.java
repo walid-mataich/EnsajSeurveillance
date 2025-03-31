@@ -1,18 +1,19 @@
 package com.example.surveillance.entity;
 
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+
+
 
 
 @NoArgsConstructor

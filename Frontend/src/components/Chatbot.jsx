@@ -66,20 +66,31 @@ const ChatBot = () => {
                 alt="ENSAJ Logo"
                 className="w-20 rounded-full"
               />
-              {/* <h4 className="ml-2 font-bold">ENSAJ ChatBot</h4> */}
             </div>
 
             {/* Body */}
             <div
-              className="chatbot-body flex-1 p-4 overflow-y-auto bg-no-repeat bg-center bg-cover"
-              style={{ backgroundImage: "url('/ba.jpg')" }}
+              className="chatbot-body flex-1 p-4 overflow-y-auto bg-no-repeat bg-center bg-cover relative"
+              style={{
+                backgroundColor:"white"
+              }}
             >
+              {/* Overlay div for blur effect */}
+              <div
+                className="absolute inset-0 bg-black opacity-50"
+                style={{
+                  filter: "blur(10px)",
+                  zIndex: "-1",
+                }}
+              ></div>
+
+              {/* Messages */}
               {messages.map((msg, index) => (
                 <div
                   key={index}
                   className={`message mb-2 p-3 rounded-lg max-w-[80%] ${
                     msg.sender === "user"
-                      ? "bg-blue-600 text-white self-end"
+                      ? "bg-blue-600 text-white self-end place-self-end"
                       : "bg-gray-300 text-black self-start"
                   }`}
                 >
@@ -88,7 +99,7 @@ const ChatBot = () => {
               ))}
               {loading && (
                 <div className="message bot flex items-center justify-start">
-                  <div className="spinner-border animate-spin inline-block w-4 h-4 border-2 rounded-full mr-2"></div>
+                  <div className="spinner-border animate-spin inline-block w-4 h-4 border-2 rounded-full mr-2 "></div>
                   <span>Loading...</span>
                 </div>
               )}

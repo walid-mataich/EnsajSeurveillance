@@ -7,7 +7,7 @@ const AdminLayout = () => {
   return (
     <>
       <Sidebar />
-      <div className="p-6 sm:ml-64">
+      <div className="p-6 sm:ml-64 bg-stone-0">
         <Outlet />
       </div>
       <ChatBot />

@@ -29,7 +29,7 @@ const router = createBrowserRouter(
         <Route path="Assignation" element={<Assignation/>} />
         <Route path="Notif" element={<Assignation/>} />
         <Route path="profile" element={<Assignation/>} />
-      </Route>
+      </Route>      
     </>
   )
 );
