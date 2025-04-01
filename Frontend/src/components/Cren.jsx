@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import api from "../api/axios";
 import { use } from "framer-motion/client";
+import { color } from "framer-motion";
 
 //ta ytzad f espace surveillant
 //composent pour le choix des crenaux pour les surveillants
 const Cren = () => {
   const [exams, setExams] = useState([]);
-  const [examId, setExamId] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [buttonColors, setButtonColors] = useState({});
@@ -14,12 +14,6 @@ const Cren = () => {
   const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
   const [surveillants, setSurveillants] = useState([]);
   const [survId, setSurvId] = useState("");
-  const [choices, setChoices] = useState([]);
-
-  //pour tester l ajout des choix
-  useEffect(() => {
-    console.log(choices);
-  }, [choices]);
 
   // hadi ra gha bach njrbo 7it mazal ma drna auth
   useEffect(() => {
@@ -52,9 +46,21 @@ const Cren = () => {
     fetchExams();
   }, []);
 
-  //fonction pour enregistrer les choix dans la base de donn
+  //fonction pour enregistrer les choix dans la base de donnees
   const handleSubmit = async () => {
-    for (const choice of choices) {
+    const tempChoices = Object.entries(buttonColors).map(([key, color]) => ({
+      idExamen: key,
+      ordre:
+        buttonColors[key] == "bg-red-500"
+          ? -1
+          : buttonColors[key] == "bg-yellow-300"
+          ? 0
+          : buttonColors[key] == "bg-green-500"
+          ? 1
+          : 0,
+    }));
+
+    for (const choice of tempChoices) {
       try {
         await api.post(
           `choix/choisir?id=${survId}&idExamen=${choice.idExamen}`,
@@ -71,7 +77,6 @@ const Cren = () => {
     }
 
     alert("Choix soumis avec succès!");
-    setChoices([]);
   };
 
   if (loading)
@@ -87,25 +92,8 @@ const Cren = () => {
     });
   };
 
-  // hadi bach kat3awd l couleur b l ordre
   const handleColorSelect = (color) => {
     setButtonColors((prevColors) => ({ ...prevColors, [selectedExam]: color }));
-
-    setChoices((prevChoices) => [
-      ...prevChoices,
-      {
-        idExamen: selectedExam,
-        ordre:
-          color == "bg-red-500"
-            ? -1
-            : color == "bg-yellow-300"
-            ? 0
-            : color == "bg-green-500"
-            ? 1
-            : 0,
-      },
-    ]);
-
     setSelectedExam(null);
   };
 
