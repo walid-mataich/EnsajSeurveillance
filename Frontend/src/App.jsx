@@ -1,15 +1,10 @@
 import React from "react";
 import "./App.css";
 import AdminDashboard from "./pages/AdminDashboard";
-import AdminLogin from "./pages/AdminLogin";
-import Home from "./pages/Home";
-import SurvDashboard from "./pages/SurvDashboard";
-import SurvLogin from "./pages/SurvLogin";
-import Sidebar from "./components/Sidebar";
 import AdminLayout from "./layouts/AdminLayout";
 import ExamenAdd from "./pages/ExamenAdd";
 import Assignation from "./pages/Assignation";
-
+import SurveillantsManag from "./pages/SurveillantsManag";
 
 import {
   Route,
@@ -24,12 +19,12 @@ const router = createBrowserRouter(
     <>
       <Route path="/admin" element={<AdminLayout />}>
         <Route index path="dashboard" element={<AdminDashboard />} />
-        <Route path="examens" element={<ExamenAdd/>} />
-        <Route path="surveillants" element={<Assignation/>} />
-        <Route path="Assignation" element={<Assignation/>} />
-        <Route path="Notif" element={<Assignation/>} />
-        <Route path="profile" element={<Assignation/>} />
-      </Route>      
+        <Route path="examens" element={<ExamenAdd />} />
+        <Route path="surveillants" element={<SurveillantsManag />} />
+        <Route path="Assignation" element={<Assignation />} />
+        <Route path="Notif" element={<Assignation />} />
+        <Route path="profile" element={<Assignation />} />
+      </Route>
     </>
   )
 );

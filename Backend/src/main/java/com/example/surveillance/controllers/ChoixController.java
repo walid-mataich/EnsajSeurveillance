@@ -12,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/choix")
+@CrossOrigin(origins = "*")
 public class ChoixController {
 
     private final ChoixService choixService;
