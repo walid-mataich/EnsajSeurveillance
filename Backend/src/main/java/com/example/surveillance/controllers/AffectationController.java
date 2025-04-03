@@ -15,6 +15,8 @@ import java.util.List;
 @RequestMapping("/affectations")
 public class AffectationController {
 
+//hada ra ga generah deepseek ra makhdamch gha bach nakhdo fikra
+
 
     private final AffectationService affectationService;
     private final ExamenRepository examenRepository;
