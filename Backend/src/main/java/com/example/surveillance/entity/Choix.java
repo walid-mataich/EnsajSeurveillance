@@ -2,6 +2,8 @@ package com.example.surveillance.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -21,13 +23,11 @@ public class Choix {
     private int ordre;
 
     @ManyToOne
-    @JsonBackReference("examen-choix")
     @JoinColumn(name = "idExamen")
     private Examen examen;
 
 
     @ManyToOne
-    @JsonBackReference("surveillant-choix")
     @JoinColumn(name = "id")
     private Surveillant surveillant;
 

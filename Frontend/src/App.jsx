@@ -5,6 +5,9 @@ import AdminLayout from "./layouts/AdminLayout";
 import ExamenAdd from "./pages/ExamenAdd";
 import Assignation from "./pages/Assignation";
 import SurveillantsManag from "./pages/SurveillantsManag";
+import SurvDashboard from "./pages/SurvDashboard";
+import SurvLayout from "./layouts/SurvLayout";
+import Cren from "./components/cren";
 
 import {
   Route,
@@ -24,6 +27,11 @@ const router = createBrowserRouter(
         <Route path="Assignation" element={<Assignation />} />
         <Route path="Notif" element={<Assignation />} />
         <Route path="profile" element={<Assignation />} />
+      </Route>
+
+      <Route path="/surv" element={<SurvLayout />}>
+        <Route index path="dashboard" element={<AdminDashboard />} />
+        <Route path="choix" element={<Cren />} />
       </Route>
     </>
   )

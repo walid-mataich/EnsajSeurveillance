@@ -1,5 +1,7 @@
 package com.example.surveillance.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.*;
@@ -59,16 +61,16 @@ public class Surveillant {
 //    @JsonManagedReference("surveillant-matiere")
 //    private List<Matiere> matieres;
 
-
+//    @JsonManagedReference("surveillant-choix")
     @OneToMany(mappedBy = "surveillant")
-    @JsonManagedReference("surveillant-choix")
+    @JsonIgnore
     private List<Choix> lesChoix;
 
 
 
-    @OneToMany(mappedBy = "surveillant")
-    @JsonManagedReference("surveillant-affectation")
-    private List<Affectation> affectations;
+//    @OneToMany(mappedBy = "surveillant")
+//    @JsonManagedReference("surveillant-affectation")
+//    private List<Affectation> affectations;
 
     
 

@@ -2,6 +2,8 @@ package com.example.surveillance.entity;
 
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -37,15 +39,16 @@ public class Examen {
     private Integer nbrDesSalles;
 
 
+//    @JsonManagedReference("examen-choix")
     @OneToMany(mappedBy = "examen")
-    @JsonManagedReference("examen-choix")
+    @JsonIgnore
     private List<Choix> lesChoix;
 
 
 
-    @OneToMany(mappedBy = "examen")
-    @JsonManagedReference("examen-affectation")
-    private List<Affectation> affectations;
+//    @OneToMany(mappedBy = "examen")
+//    @JsonManagedReference("examen-affectation")
+//    private List<Affectation> affectations;
 
 
 
@@ -60,5 +63,9 @@ public class Examen {
         this.matiere = matiere;
     }
 
+    public boolean conflictsWith(Examen other) {
+        return this.jour.equals(other.jour) &&
+                !(this.fin.isBefore(other.debut) || other.fin.isBefore(this.debut));
+    }
 
 }

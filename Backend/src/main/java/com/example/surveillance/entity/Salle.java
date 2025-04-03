@@ -23,9 +23,9 @@ public class Salle {
     private String nomSale;
 
 
-    @OneToMany(mappedBy = "salle")
-    @JsonManagedReference("salle-Affectation")
-    private List<Affectation> Affectation;
+//    @OneToMany(mappedBy = "salle")
+//    @JsonManagedReference("salle-Affectation")
+//    private List<Affectation> Affectation;
 
 
 
