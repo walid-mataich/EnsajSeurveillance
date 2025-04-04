@@ -22,6 +22,7 @@ import { SiD } from "react-icons/si";
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
+      <Route path="/loginadmin" element={<AdminLogin/>} />
       <Route path="/admin" element={<AdminLayout />}>
         <Route index path="dashboard" element={<AdminDashboard />} />
         <Route path="examens" element={<ExamenAdd/>} />
@@ -31,6 +32,7 @@ const router = createBrowserRouter(
         <Route path="profile" element={<Assignation/>} />
       </Route>
     </>
+    
   )
 );
 

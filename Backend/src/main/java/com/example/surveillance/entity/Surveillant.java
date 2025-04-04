@@ -1,6 +1,7 @@
 package com.example.surveillance.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -33,6 +34,7 @@ public class Surveillant {
     @Size(min = 8, max = 20, message = "Le mot de passe doit contenir entre 8 et 20 caractères")
     @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$",
             message = "Le mot de passe doit contenir au moins une majuscule, un chiffre et un caractère spécial")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
 
