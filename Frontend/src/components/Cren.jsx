@@ -90,10 +90,12 @@ const Cren = () => {
       top: rect.top + window.scrollY,
       left: rect.left + window.scrollX,
     });
+    console.log(groupedExams);
   };
 
   const handleColorSelect = (color) => {
     setButtonColors((prevColors) => ({ ...prevColors, [selectedExam]: color }));
+    console.table(buttonColors);
     setSelectedExam(null);
   };
 
@@ -103,6 +105,7 @@ const Cren = () => {
     acc[date].push(exam);
     return acc;
   }, {});
+  6;
 
   return (
     <>

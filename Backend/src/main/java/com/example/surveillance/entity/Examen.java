@@ -40,9 +40,9 @@ public class Examen {
 
 
 //    @JsonManagedReference("examen-choix")
-    @OneToMany(mappedBy = "examen")
-    @JsonIgnore
-    private List<Choix> lesChoix;
+//    @OneToMany(mappedBy = "examen")
+//    @JsonIgnore
+//    private List<Choix> lesChoix;
 
 
 

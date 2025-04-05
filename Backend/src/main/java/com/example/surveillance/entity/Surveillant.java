@@ -62,9 +62,10 @@ public class Surveillant {
 //    private List<Matiere> matieres;
 
 //    @JsonManagedReference("surveillant-choix")
-    @OneToMany(mappedBy = "surveillant")
-    @JsonIgnore
-    private List<Choix> lesChoix;
+
+//    @OneToMany(mappedBy = "surveillant")
+//    @JsonIgnore
+//    private List<Choix> lesChoix;
 
 
 

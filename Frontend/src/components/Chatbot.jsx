@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import api from "../api/axios";
+import ReactMarkdown from "react-markdown";
 
 const ChatBot = () => {
   const [input, setInput] = useState("");
@@ -71,32 +72,32 @@ const ChatBot = () => {
             {/* Body */}
             <div
               className="chatbot-body flex-1 p-4 overflow-y-auto bg-no-repeat bg-center bg-cover relative"
-              style={{
-                backgroundColor:"white"
-              }}
+              style={{ backgroundColor: "white" }}
             >
-              {/* Overlay div for blur effect */}
+              {/* Blur Overlay */}
               <div
                 className="absolute inset-0 bg-black opacity-50"
-                style={{
-                  filter: "blur(10px)",
-                  zIndex: "-1",
-                }}
+                style={{ filter: "blur(10px)", zIndex: "-1" }}
               ></div>
 
               {/* Messages */}
               {messages.map((msg, index) => (
                 <div
                   key={index}
-                  className={`message mb-2 p-3 rounded-lg max-w-[80%] ${
+                  className={`message mb-2 p-3 rounded-lg max-w-[80%] whitespace-pre-wrap ${
                     msg.sender === "user"
                       ? "bg-blue-600 text-white self-end place-self-end"
                       : "bg-gray-300 text-black self-start"
                   }`}
                 >
-                  {msg.text}
+                  {msg.sender === "bot" ? (
+                    <ReactMarkdown>{msg.text}</ReactMarkdown>
+                  ) : (
+                    msg.text
+                  )}
                 </div>
               ))}
+
               {loading && (
                 <div className="message bot flex items-center justify-start">
                   <div className="spinner-border animate-spin inline-block w-4 h-4 border-2 rounded-full mr-2 "></div>
