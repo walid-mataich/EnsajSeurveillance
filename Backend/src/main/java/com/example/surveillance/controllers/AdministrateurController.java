@@ -3,7 +3,6 @@ package com.example.surveillance.controllers;
 import com.example.surveillance.repositories.AdministrateurRepository;
 import com.example.surveillance.response.AuthResponse;
 import com.example.surveillance.services.AdministrateurServiceImplementation;
-import com.example.surveillance.services.AdministrateurService;
 import com.example.surveillance.SecurityConfig.JwtProvider;
 import com.example.surveillance.entity.Administrateur;
 import org.springframework.beans.factory.annotation.Autowired;

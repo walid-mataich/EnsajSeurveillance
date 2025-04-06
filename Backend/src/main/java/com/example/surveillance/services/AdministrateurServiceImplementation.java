@@ -2,6 +2,7 @@ package com.example.surveillance.services;
 
 import com.example.surveillance.repositories.AdministrateurRepository;
 import com.example.surveillance.entity.Administrateur;
+import com.example.surveillance.services.ServiceAuthen.AdministrateurService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
