@@ -49,5 +49,9 @@ public class ChoixService {
         return choixRepository.findAll();
     }
 
+    public List<Choix> choixBySurv(Long id){
+        return choixRepository.findAllBySurveillant_Id(id);
+    }
+
 
 }

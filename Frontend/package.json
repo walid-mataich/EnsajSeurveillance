@@ -29,6 +29,7 @@
     "axios": "^1.8.3",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.5.0",
+    "html2pdf.js": "^0.10.3",
     "lucide-react": "^0.480.0",
     "react": "^18.3.1",
     "react-apexcharts": "^1.7.0",

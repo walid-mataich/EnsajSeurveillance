@@ -24,7 +24,14 @@ public class AffectationService {
         List<Examen> exams = examenRepo.findAll();
         List<Surveillant> surveillants = surveillantRepo.findAll();
         int totalSlots = exams.stream().mapToInt(Examen::getNbrDesSalles).sum();
-        int maxAssignments = (totalSlots / surveillants.size()) + 1;
+
+        int maxAssignments;
+
+        if (totalSlots % surveillants.size() != 0) {
+            maxAssignments = (totalSlots / surveillants.size()) + 1;
+        }else {
+            maxAssignments = (totalSlots / surveillants.size());
+        }
 
         Map<Long, List<Choix>> surveillantChoixMap = choixRepo.findAll().stream()
                 .filter(c -> c.getOrdre() >= 0)
@@ -32,7 +39,7 @@ public class AffectationService {
 
         for (Examen exam : exams) {
             for (int i = 0; i < exam.getNbrDesSalles(); i++) {
-                Salle salle = new Salle(i + 1, "B" + (i + 1)); // Generate salle dynamically
+                Salle salle = new Salle(i + 1, "B" + (i + 1));
 
                 Surveillant best = findBestSurveillant(exam, surveillantChoixMap, maxAssignments);
                 if (best != null) {

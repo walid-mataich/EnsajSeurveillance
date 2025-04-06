@@ -1,55 +1,96 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../api/axios";
 
 const PlanningTable = ({ niveau, affectations }) => {
-  const [grouped, setGrouped] = useState({});
+  const [slotsByDate, setSlotsByDate] = useState({});
+  const [sortedDates, setSortedDates] = useState([]);
+  const [salleNames, setSalleNames] = useState([]);
 
   useEffect(() => {
-    const groupBySlot = {};
-    affectations
-      .filter((a) => a.examen.matiere.niveau === niveau)
-      .forEach((a) => {
-        const key = `${a.examen.jour} ${a.examen.debut}–${a.examen.fin} - ${a.examen.matiere.nomMatiere}`;
-        if (!groupBySlot[key]) groupBySlot[key] = {};
-        groupBySlot[key][a.salle.nomSale] = a.surveillant.nom;
+    const filtered = affectations.filter(
+      (a) => a.examen.matiere.niveau === niveau
+    );
+
+    const salleSet = new Set();
+    const temp = {};
+
+    filtered.forEach((a) => {
+      salleSet.add(a.salle.nomSale);
+      const date = a.examen.jour;
+      const slotKey = `${a.examen.debut}–${a.examen.fin} - ${a.examen.matiere.nomMatiere}`;
+      if (!temp[date]) temp[date] = {};
+      if (!temp[date][slotKey]) temp[date][slotKey] = {};
+      temp[date][slotKey][a.salle.nomSale] = a.surveillant.nom;
+    });
+
+    // Sort dates and their slots
+    const sortedDateKeys = Object.keys(temp).sort((a, b) => new Date(a) - new Date(b));
+    const sortedSlots = {};
+    sortedDateKeys.forEach((date) => {
+      const slots = Object.entries(temp[date]).sort((a, b) => {
+        const [aStart] = a[0].split("–");
+        const [bStart] = b[0].split("–");
+        return aStart.localeCompare(bStart);
       });
+      sortedSlots[date] = Object.fromEntries(slots);
+    });
 
-    setGrouped(groupBySlot);
+    setSlotsByDate(sortedSlots);
+    setSortedDates(sortedDateKeys);
+    setSalleNames(Array.from(salleSet).sort());
   }, [affectations, niveau]);
-
-  // Get all unique salles
-  const salleNames = Array.from(
-    new Set(affectations.map((a) => a.salle.nomSale))
-  ).sort();
 
   return (
     <div className="overflow-auto mb-10">
       <h2 className="text-xl font-bold text-center mb-4">
-        Planning de Surveillance - Niveau {niveau}
+        Planning de Surveillance / 2AP - {niveau}
       </h2>
-      <table className="min-w-full table-auto border border-gray-300 text-sm text-center">
-        <thead className="bg-gray-100">
-          <tr>
+      <table className="min-w-full table-auto border border-gray-300 text-sm text-center bg-white shadow">
+        <thead>
+          {/* First row: Date headers with colspan */}
+          <tr className="bg-gray-200">
             <th className="border px-2 py-1">Salles</th>
-            {Object.keys(grouped).map((slot) => (
-              <th key={slot} className="border px-2 py-1">
-                {slot.split(" - ")[1]} <br />
-                <span className="text-xs text-gray-600">
-                  {slot.split(" - ")[0]}
-                </span>
+            {sortedDates.map((date) => (
+              <th
+                key={date}
+                colSpan={Object.keys(slotsByDate[date]).length}
+                className="border px-2 py-1"
+              >
+                {new Date(date).toLocaleDateString("fr-FR", {
+                  weekday: "long",
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
               </th>
             ))}
+          </tr>
+          {/* Second row: Time + Matière headers */}
+          <tr className="bg-gray-100">
+            <th className="border px-2 py-1"></th>
+            {sortedDates.map((date) =>
+              Object.keys(slotsByDate[date]).map((slotKey, idx) => (
+                <th key={`${date}-${idx}`} className="border px-2 py-1">
+                  {slotKey.split(" - ")[1]} <br />
+                  <span className="text-xs text-gray-600">
+                    {slotKey.split(" - ")[0]}
+                  </span>
+                </th>
+              ))
+            )}
           </tr>
         </thead>
         <tbody>
           {salleNames.map((salle) => (
             <tr key={salle}>
               <td className="border px-2 py-1 font-medium">{salle}</td>
-              {Object.keys(grouped).map((slot) => (
-                <td key={slot} className="border px-2 py-1">
-                  {grouped[slot][salle] || ""}
-                </td>
-              ))}
+              {sortedDates.map((date) =>
+                Object.values(slotsByDate[date]).map((slot) => (
+                  <td key={`${salle}-${date}-${Math.random()}`} className="border px-2 py-1">
+                    {slot[salle] || ""}
+                  </td>
+                ))
+              )}
             </tr>
           ))}
         </tbody>
@@ -62,8 +103,8 @@ const Rslt = () => {
   const [affectations, setAffectations] = useState([]);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:8080/affectations") // Update this with your actual endpoint
+    api
+      .get("/affectations") 
       .then((res) => {
         console.log("Affectations:", res.data);
         setAffectations(res.data);

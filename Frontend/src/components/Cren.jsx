@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import api from "../api/axios";
 import { use } from "framer-motion/client";
 import { color } from "framer-motion";
+import ChoixBySurv from "./ChoixBySurv";
 
 //ta ytzad f espace surveillant
 //composent pour le choix des crenaux pour les surveillants
@@ -201,6 +202,7 @@ const Cren = () => {
           </button>
         </div>
       </div>
+      <ChoixBySurv />
     </>
   );
 };

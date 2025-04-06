@@ -15,7 +15,7 @@ import {
   createRoutesFromElements,
   RouterProvider,
 } from "react-router-dom";
-import { SiD } from "react-icons/si";
+
 
 const router = createBrowserRouter(
   createRoutesFromElements(
