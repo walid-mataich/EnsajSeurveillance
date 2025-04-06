@@ -3,7 +3,8 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 function SurvLogin() {
-    localStorage.removeItem("jwtToken");
+    localStorage.removeItem("jwtTokensurv");
+    localStorage.removeItem("jwtTokenadmin");
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -19,7 +20,7 @@ function SurvLogin() {
             // Changer l'URL pour l'authentification surveillant
             const response = await axios.post('http://localhost:8080/surveillants/signin', { email, password });
             console.log('Connexion réussie:', response.data);
-            localStorage.setItem("jwtToken", response.data.jwt);
+            localStorage.setItem("jwtTokensurv", response.data.jwt);
             navigate('/surv'); // Redirection vers la page surveillant après connexion
         } catch (error) {
             console.error('Échec de la connexion:', error.response ? error.response.data : error.message);

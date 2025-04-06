@@ -22,13 +22,13 @@ import {
 import { SiD } from "react-icons/si";
 // Route privée pour administrateur : redirige vers /loginadmin si pas de token
 const AdminPrivateRoute = ({ children }) => {
-  const isAuthenticated = !!localStorage.getItem("jwtToken");
+  const isAuthenticated = !!localStorage.getItem("jwtTokenadmin");
   return isAuthenticated ? children : <Navigate to="/loginadmin" replace />;
 };
 
 // Route privée pour surveillant : redirige vers /loginsurv si pas de token
 const SurvPrivateRoute = ({ children }) => {
-  const isAuthenticated = !!localStorage.getItem("jwtToken");
+  const isAuthenticated = !!localStorage.getItem("jwtTokensurv");
   return isAuthenticated ? children : <Navigate to="/loginsurv" replace />;
 };
 

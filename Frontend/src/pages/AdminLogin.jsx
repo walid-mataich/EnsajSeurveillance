@@ -3,7 +3,8 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 function AdminLogin() {
-    localStorage.removeItem("jwtToken");
+    localStorage.removeItem("jwtTokenadmin");
+    localStorage.removeItem("jwtTokensurv");
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -18,7 +19,7 @@ function AdminLogin() {
 
             const response = await axios.post('http://localhost:8080/authAdmin/signin', { email, password });
             console.log('Connexion réussie:', response.data);
-            localStorage.setItem("jwtToken", response.data.jwt);
+            localStorage.setItem("jwtTokenadmin", response.data.jwt);
             navigate('/admin');
         } catch (error) {
             console.error('Échec de la connexion:', error.response ? error.response.data : error.message);
