@@ -1,4 +1,6 @@
 import React from "react";
+import { Navigate } from "react-router-dom";
+
 import "./App.css";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminLogin from "./pages/AdminLogin";
@@ -18,6 +20,17 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import { SiD } from "react-icons/si";
+// Route privée pour administrateur : redirige vers /loginadmin si pas de token
+const AdminPrivateRoute = ({ children }) => {
+  const isAuthenticated = !!localStorage.getItem("jwtToken");
+  return isAuthenticated ? children : <Navigate to="/loginadmin" replace />;
+};
+
+// Route privée pour surveillant : redirige vers /loginsurv si pas de token
+const SurvPrivateRoute = ({ children }) => {
+  const isAuthenticated = !!localStorage.getItem("jwtToken");
+  return isAuthenticated ? children : <Navigate to="/loginsurv" replace />;
+};
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -50,7 +63,8 @@ const router = createBrowserRouter(
           <SurvPrivateRoute>
             <SurvLayout />
           </SurvPrivateRoute>
-        }>
+        }
+      >
         <Route index path="dashboard" element={<SurvDashboard />} />
         <Route path="choix" element={<Cren />} />
       </Route>
