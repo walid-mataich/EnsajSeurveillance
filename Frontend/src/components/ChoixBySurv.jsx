@@ -38,7 +38,7 @@ const ChoixBySurv = () => {
         value={id}
         onChange={(e) => setId(e.target.value)}
       />
-      {(choix != []) && (<h1>{choix[0].surveillant.nom}</h1>)}
+      {/* {(choix != []) && (<h1>{choix[0].surveillant.nom}</h1>)} */}
       <div className="flex justify-center mt-4">
         
         {choix.map((c) => (
