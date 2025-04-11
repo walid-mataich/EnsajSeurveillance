@@ -3,13 +3,17 @@ package com.example.surveillance.services;
 
 import com.example.surveillance.entity.Examen;
 import com.example.surveillance.entity.Matiere;
+import com.example.surveillance.entity.Salle;
 import com.example.surveillance.repositories.ExamenRepository;
 import com.example.surveillance.repositories.MatiereRepositoriy;
+import com.example.surveillance.repositories.SalleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class ExamenService {
@@ -20,9 +24,13 @@ public class ExamenService {
     @Autowired
     private final MatiereRepositoriy matiereRepositoriy;
 
-    public ExamenService(ExamenRepository examenRepository, MatiereRepositoriy matiereRepositoriy) {
+    @Autowired
+    private final SalleRepository salleRepository;
+
+    public ExamenService(ExamenRepository examenRepository, MatiereRepositoriy matiereRepositoriy, SalleRepository salleRepository) {
         this.examenRepository = examenRepository;
         this.matiereRepositoriy = matiereRepositoriy;
+        this.salleRepository = salleRepository;
     }
 
     public Examen createExamen(Examen examen, Long matiereId) {
@@ -36,6 +44,30 @@ public class ExamenService {
             throw new RuntimeException("Matiere not found");
         }
     }
+
+
+    public Examen createExamen(Examen examen, Long matiereId, Set<Integer> idSalles) {
+
+        Optional<Matiere> matiere = matiereRepositoriy.findById(matiereId);
+
+        if (matiere.isPresent()) {
+            examen.setMatiere(matiere.get());
+
+
+            if (idSalles != null && !idSalles.isEmpty()) {
+                Set<Salle> salles = new HashSet<>(salleRepository.findAllById(idSalles));
+                examen.setSalles(salles);
+            }
+
+            return examenRepository.save(examen);
+
+        }else {
+            throw new RuntimeException("Matiere not found");
+        }
+
+    }
+
+
 
     public List<Examen> getAllExamen(){
         return examenRepository.findAllByOrderByJourAscDebutAsc();

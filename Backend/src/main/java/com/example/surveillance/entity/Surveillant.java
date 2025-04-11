@@ -32,6 +32,12 @@ public class Surveillant {
     @Email(message = "cet email est nom valide")
     private String email;
 
+    private Boolean tkw;
+
+    
+
+
+
     @NotBlank(message = "Le mot de passe ne peut pas être vide")
     @Size(min = 8, max = 20, message = "Le mot de passe doit contenir entre 8 et 20 caractères")
     @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$",
