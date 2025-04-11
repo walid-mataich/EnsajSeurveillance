@@ -43,7 +43,7 @@ public class ExamenController {
         return examen.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @CrossOrigin("*")
+    @CrossOrigin(origins = "*")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteExamen(@PathVariable Long id){
         boolean deleted = examenService.deleteExamenById(id);
@@ -52,6 +52,12 @@ public class ExamenController {
         }else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @CrossOrigin(origins = "*")
+    @PutMapping("/modifier/{id}")
+    public Examen updateExamen(@RequestBody Examen examen, @PathVariable Long id){
+        return examenService.updateExamen(examen, id);
     }
 
 }

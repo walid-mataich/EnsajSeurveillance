@@ -52,4 +52,32 @@ public class ExamenService {
         }
         return false;
     }
+
+    public Examen updateExamen(Examen updatedExamen, Long id, Long matiereId){
+        Optional<Examen> existingExamenOpt = examenRepository.findById(id);
+        if (existingExamenOpt.isPresent()){
+            Examen existingExamen = existingExamenOpt.get();
+            existingExamen.setJour(updatedExamen.getJour());
+            existingExamen.setDebut(updatedExamen.getDebut());
+            existingExamen.setFin(updatedExamen.getFin());
+            existingExamen.setNbrDesSalles(updatedExamen.getNbrDesSalles());
+
+            if (matiereId != null){
+                Optional<Matiere> matiere = matiereRepositoriy.findById(matiereId);
+                if (matiere.isPresent()) {
+                    existingExamen.setMatiere(matiere.get());
+                }else {
+                    throw new RuntimeException("Matiere not found with id: " + matiereId);
+                }
+            }
+
+            return examenRepository.save(existingExamen);
+        }else {
+            throw new RuntimeException("Matiere not found with id: " + id);
+        }
+    }
+
+    public Examen updateExamen(Examen updatedExamen, Long id){
+        return updateExamen(updatedExamen, id, null);
+    }
 }

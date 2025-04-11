@@ -31,4 +31,9 @@ public class ChoixController {
     @CrossOrigin(origins = "*")
     @GetMapping("/all")
     public List<Choix> getAllChoix(){return choixService.allChoix();}
+
+    @GetMapping("/{id}")
+    public List<Choix> getChoixBySurvId(@PathVariable Long id){
+        return choixService.choixBySurv(id);
+    }
 }

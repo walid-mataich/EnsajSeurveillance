@@ -1,228 +1,124 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
 import api from "../api/axios";
+
+const PlanningTable = ({ niveau, affectations }) => {
+  const [slotsByDate, setSlotsByDate] = useState({});
+  const [sortedDates, setSortedDates] = useState([]);
+  const [salleNames, setSalleNames] = useState([]);
+
+  useEffect(() => {
+    const filtered = affectations.filter(
+      (a) => a.examen.matiere.niveau === niveau
+    );
+
+    const salleSet = new Set();
+    const temp = {};
+
+    filtered.forEach((a) => {
+      salleSet.add(a.salle.nomSale);
+      const date = a.examen.jour;
+      const slotKey = `${a.examen.debut}–${a.examen.fin} - ${a.examen.matiere.nomMatiere}`;
+      if (!temp[date]) temp[date] = {};
+      if (!temp[date][slotKey]) temp[date][slotKey] = {};
+      temp[date][slotKey][a.salle.nomSale] = a.surveillant.nom;
+    });
+
+    // Sort dates and their slots
+    const sortedDateKeys = Object.keys(temp).sort((a, b) => new Date(a) - new Date(b));
+    const sortedSlots = {};
+    sortedDateKeys.forEach((date) => {
+      const slots = Object.entries(temp[date]).sort((a, b) => {
+        const [aStart] = a[0].split("–");
+        const [bStart] = b[0].split("–");
+        return aStart.localeCompare(bStart);
+      });
+      sortedSlots[date] = Object.fromEntries(slots);
+    });
+
+    setSlotsByDate(sortedSlots);
+    setSortedDates(sortedDateKeys);
+    setSalleNames(Array.from(salleSet).sort());
+  }, [affectations, niveau]);
+
+  return (
+    <div className="overflow-auto mb-10">
+      <h2 className="text-xl font-bold text-center mb-4">
+        Planning de Surveillance / 2AP - {niveau}
+      </h2>
+      <table className="min-w-full table-auto border border-gray-300 text-sm text-center bg-white shadow">
+        <thead>
+          {/* First row: Date headers with colspan */}
+          <tr className="bg-gray-200">
+            <th className="border px-2 py-1">Salles</th>
+            {sortedDates.map((date) => (
+              <th
+                key={date}
+                colSpan={Object.keys(slotsByDate[date]).length}
+                className="border px-2 py-1"
+              >
+                {new Date(date).toLocaleDateString("fr-FR", {
+                  weekday: "long",
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+              </th>
+            ))}
+          </tr>
+          {/* Second row: Time + Matière headers */}
+          <tr className="bg-gray-100">
+            <th className="border px-2 py-1"></th>
+            {sortedDates.map((date) =>
+              Object.keys(slotsByDate[date]).map((slotKey, idx) => (
+                <th key={`${date}-${idx}`} className="border px-2 py-1">
+                  {slotKey.split(" - ")[1]} <br />
+                  <span className="text-xs text-gray-600">
+                    {slotKey.split(" - ")[0]}
+                  </span>
+                </th>
+              ))
+            )}
+          </tr>
+        </thead>
+        <tbody>
+          {salleNames.map((salle) => (
+            <tr key={salle}>
+              <td className="border px-2 py-1 font-medium">{salle}</td>
+              {sortedDates.map((date) =>
+                Object.values(slotsByDate[date]).map((slot) => (
+                  <td key={`${salle}-${date}-${Math.random()}`} className="border px-2 py-1">
+                    {slot[salle] || ""}
+                  </td>
+                ))
+              )}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
 
 const Rslt = () => {
   const [affectations, setAffectations] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [selectedLevel, setSelectedLevel] = useState("all");
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await api.get("/affectations/all");
-        setAffectations(response.data);
-        setLoading(false);
-      } catch (err) {
-        setError(err.message);
-        setLoading(false);
-        console.error("Error fetching data:", err);
-      }
-    };
-
-    fetchData();
+    api
+      .get("/affectations") 
+      .then((res) => {
+        console.log("Affectations:", res.data);
+        setAffectations(res.data);
+      })
+      .catch((err) => console.error(err));
   }, []);
 
-  // Group exams by day and time slot
-  const groupByDayAndTime = (affectations) => {
-    const grouped = {};
-
-    affectations.forEach((affectation) => {
-      const day = affectation.examen.jour;
-      const timeSlot = `${affectation.examen.debut}-${affectation.examen.fin}`;
-
-      if (!grouped[day]) {
-        grouped[day] = {};
-      }
-
-      if (!grouped[day][timeSlot]) {
-        grouped[day][timeSlot] = {
-          matiere: affectation.examen.matiere.nomMatiere,
-          chefModule: affectation.examen.matiere.chefDeModule.nom,
-          salles: {},
-        };
-      }
-
-      grouped[day][timeSlot].salles[affectation.salle.nomSale] =
-        affectation.surveillant.nom;
-    });
-
-    return grouped;
-  };
-
-  // Filter affectations by level if needed
-  const filteredAffectations =
-    selectedLevel === "all"
-      ? affectations
-      : affectations.filter(
-          (a) => a.examen.matiere.niveau.toString() === selectedLevel
-        );
-
-  const groupedData = groupByDayAndTime(filteredAffectations);
-
-  // Extract all days from the data
-  const days = Object.keys(groupedData).sort();
-
-  // Extract all time slots (assuming consistent time slots across days)
-  const timeSlots =
-    days.length > 0 ? Object.keys(groupedData[days[0]]).sort() : [];
-
-  // Extract all salle names (B1, B2, etc.)
-  const allSalles = Array.from(
-    new Set(affectations.map((a) => a.salle.nomSale))
-  ).sort((a, b) => parseInt(a.substring(1)) - parseInt(b.substring(1)));
-
-  if (loading) {
-    return <div className="loading">Loading planning data...</div>;
-  }
-
-  if (error) {
-    return <div className="error">Error: {error}</div>;
-  }
-
   return (
-    <div className="planning-container">
-      <h2>Planning de Surveillance des Examens</h2>
-
-      <div className="level-filter">
-        <label htmlFor="level-select">Filtrer par niveau : </label>
-        <select
-          id="level-select"
-          value={selectedLevel}
-          onChange={(e) => setSelectedLevel(e.target.value)}
-        >
-          <option value="all">Tous les niveaux</option>
-          <option value="1">Niveau 1</option>
-          <option value="2">Niveau 2</option>
-        </select>
-      </div>
-
-      <div className="table-responsive">
-        <table className="planning-table">
-          <thead>
-            <tr>
-              <th rowSpan="2">Salles</th>
-              {days.map((day) => (
-                <th key={day} colSpan={timeSlots.length}>
-                  {new Date(day).toLocaleDateString("fr-FR", {
-                    weekday: "long",
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric",
-                  })}
-                </th>
-              ))}
-            </tr>
-            <tr>
-              {days.flatMap((day) =>
-                timeSlots.map((slot) => (
-                  <th key={`${day}-${slot}`}>
-                    {slot.split(":").slice(0, 2).join("h")}
-                  </th>
-                ))
-              )}
-            </tr>
-            <tr>
-              <th></th>
-              {days.flatMap((day) =>
-                timeSlots.map((slot) => (
-                  <th key={`mat-${day}-${slot}`}>
-                    {groupedData[day]?.[slot]?.matiere || "-"}
-                  </th>
-                ))
-              )}
-            </tr>
-            <tr>
-              <th></th>
-              {days.flatMap((day) =>
-                timeSlots.map((slot) => (
-                  <th key={`prof-${day}-${slot}`}>
-                    {groupedData[day]?.[slot]?.chefModule || "-"}
-                  </th>
-                ))
-              )}
-            </tr>
-          </thead>
-          <tbody>
-            {allSalles.map((salle) => (
-              <tr key={salle}>
-                <td>{salle}</td>
-                {days.flatMap((day) =>
-                  timeSlots.map((slot) => (
-                    <td key={`${salle}-${day}-${slot}`}>
-                      {groupedData[day]?.[slot]?.salles[salle] || "-"}
-                    </td>
-                  ))
-                )}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      <style jsx>{`
-        .planning-container {
-          padding: 20px;
-          font-family: Arial, sans-serif;
-        }
-
-        .loading,
-        .error {
-          padding: 20px;
-          text-align: center;
-          font-size: 1.2em;
-        }
-
-        .error {
-          color: #d32f2f;
-        }
-
-        .level-filter {
-          margin-bottom: 20px;
-        }
-
-        .level-filter select {
-          padding: 5px 10px;
-          border-radius: 4px;
-          border: 1px solid #ccc;
-        }
-
-        .table-responsive {
-          overflow-x: auto;
-          margin-top: 20px;
-          border: 1px solid #ddd;
-          border-radius: 4px;
-        }
-
-        .planning-table {
-          width: 100%;
-          border-collapse: collapse;
-        }
-
-        .planning-table th,
-        .planning-table td {
-          border: 1px solid #ddd;
-          padding: 8px;
-          text-align: center;
-          min-width: 120px;
-        }
-
-        .planning-table th {
-          background-color: #f2f2f2;
-          position: sticky;
-          top: 0;
-          font-weight: bold;
-        }
-
-        .planning-table tr:nth-child(even) {
-          background-color: #f9f9f9;
-        }
-
-        .planning-table tr:hover {
-          background-color: #f1f1f1;
-        }
-      `}</style>
+    <div className="p-6">
+      <h1 className="text-2xl font-bold text-center mb-8">
+        Planning de Surveillance - Année Universitaire 2024/2025
+      </h1>
+      <PlanningTable niveau={1} affectations={affectations} />
+      <PlanningTable niveau={2} affectations={affectations} />
     </div>
   );
 };

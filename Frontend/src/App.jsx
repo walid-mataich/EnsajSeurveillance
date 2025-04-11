@@ -1,6 +1,10 @@
 import React from "react";
+import { Navigate } from "react-router-dom";
+
 import "./App.css";
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminLogin from "./pages/AdminLogin";
+import SurvLogin from "./pages/SurvLogin";
 import AdminLayout from "./layouts/AdminLayout";
 import ExamenAdd from "./pages/ExamenAdd";
 import Assignation from "./pages/Assignation";
@@ -8,6 +12,8 @@ import SurveillantsManag from "./pages/SurveillantsManag";
 import SurvDashboard from "./pages/SurvDashboard";
 import SurvLayout from "./layouts/SurvLayout";
 import Cren from "./components/cren";
+import HomePage from "./Pages/Home";
+import Log from "./pages/Log";
 
 import {
   Route,
@@ -16,11 +22,35 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import { SiD } from "react-icons/si";
+// Route privée pour administrateur : redirige vers /loginadmin si pas de token
+const AdminPrivateRoute = ({ children }) => {
+  const isAuthenticated = !!localStorage.getItem("jwtTokenadmin");
+  return isAuthenticated ? children : <Navigate to="/loginadmin" replace />;
+};
+
+// Route privée pour surveillant : redirige vers /loginsurv si pas de token
+const SurvPrivateRoute = ({ children }) => {
+  const isAuthenticated = !!localStorage.getItem("jwtTokensurv");
+  return isAuthenticated ? children : <Navigate to="/loginsurv" replace />;
+};
+//test
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
-      <Route path="/admin" element={<AdminLayout />}>
+      {/* Pages de login */}
+      <Route path="/loginadmin" element={<AdminLogin />} />
+      <Route path="/loginsurv" element={<SurvLogin />} />
+
+      {/* Routes protégées pour administrateur */}
+      <Route
+        path="/admin"
+        element={
+          <AdminPrivateRoute>
+            <AdminLayout />
+          </AdminPrivateRoute>
+        }
+      >
         <Route index path="dashboard" element={<AdminDashboard />} />
         <Route path="examens" element={<ExamenAdd />} />
         <Route path="surveillants" element={<SurveillantsManag />} />
@@ -29,10 +59,21 @@ const router = createBrowserRouter(
         <Route path="profile" element={<Assignation />} />
       </Route>
 
-      <Route path="/surv" element={<SurvLayout />}>
-        <Route index path="dashboard" element={<AdminDashboard />} />
+      {/* Route protégée pour surveillant */}
+      <Route
+        path="/surv"
+        element={
+          <SurvPrivateRoute>
+            <SurvLayout />
+          </SurvPrivateRoute>
+        }
+      >
+        <Route index path="dashboard" element={<SurvDashboard />} />
         <Route path="choix" element={<Cren />} />
       </Route>
+
+      <Route path="/" element={<HomePage />} />
+      <Route path="/log" element={<Log />} />
     </>
   )
 );

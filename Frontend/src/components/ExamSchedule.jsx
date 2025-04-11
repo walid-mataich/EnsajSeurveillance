@@ -5,6 +5,8 @@ const ExamSchedule = () => {
   const [exams, setExams] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [editExam, setEditExam] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchExams = async () => {
@@ -20,17 +22,30 @@ const ExamSchedule = () => {
     fetchExams();
   }, []);
 
-  const handleDelete = async (idExamen) => {
-    const confirmDelete = window.confirm(
-      "Voulez-vous vraiment supprimer cet examen ?"
-    );
-    if (!confirmDelete) return;
+  const handleEdit = (exam) => {
+    setEditExam({ ...exam });
+    setModalOpen(true);
+  };
 
+  const handleUpdate = async () => {
     try {
-      await api.delete(`/examen/delete/${idExamen}`);
-      setExams(exams.filter((exam) => exam.idExamen !== idExamen));
+      await api.put(`/examen/modifier/${editExam.idExamen}`, {
+        jour: editExam.jour,
+        debut: editExam.debut,
+        fin: editExam.fin,
+        nbrDesSalles: editExam.salle,
+      });
+
+      setExams((prev) =>
+        prev.map((ex) =>
+          ex.idExamen === editExam.idExamen ? { ...ex, ...editExam } : ex
+        )
+      );
+
+      setModalOpen(false);
+      setEditExam(null);
     } catch (err) {
-      alert("Erreur lors de la suppression");
+      alert("Erreur lors de la mise à jour");
     }
   };
 
@@ -38,7 +53,6 @@ const ExamSchedule = () => {
     return <p className="text-center text-gray-600">Chargement...</p>;
   if (error) return <p className="text-center text-red-500">{error}</p>;
 
-  // Grouper les examens par niveau
   const examsByLevel = exams.reduce((acc, exam) => {
     const level = exam.matiere.niveau;
     if (!acc[level]) acc[level] = [];
@@ -46,7 +60,6 @@ const ExamSchedule = () => {
     return acc;
   }, {});
 
-  // Fonction pour afficher un planning pour un niveau donné
   const renderScheduleForLevel = (level, exams) => {
     const groupedExams = exams.reduce((acc, exam) => {
       const date = exam.jour;
@@ -129,10 +142,10 @@ const ExamSchedule = () => {
                   exams.map((exam) => (
                     <td key={exam.idExamen} className="py-2 px-4 border">
                       <button
-                        onClick={() => handleDelete(exam.idExamen)}
-                        className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-700"
+                        onClick={() => handleEdit(exam)}
+                        className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-700"
                       >
-                        Supprimer
+                        Modifier
                       </button>
                     </td>
                   ))
@@ -162,10 +175,10 @@ const ExamSchedule = () => {
                   </p>
                   <p className="text-gray-700">{exam.nbrDesSalles} salle(s)</p>
                   <button
-                    onClick={() => handleDelete(exam.idExamen)}
-                    className="bg-red-500 text-white px-3 py-1 mt-2 rounded hover:bg-red-700 w-full"
+                    onClick={() => handleEdit(exam)}
+                    className="bg-blue-500 text-white px-3 py-1 mt-2 rounded hover:bg-blue-700 w-full"
                   >
-                    Supprimer
+                    Modifier
                   </button>
                 </div>
               ))}
@@ -182,9 +195,81 @@ const ExamSchedule = () => {
         Planning des Examens
       </h1>
 
-      {/* Afficher les plannings par niveau */}
       {Object.entries(examsByLevel).map(([level, exams]) =>
         renderScheduleForLevel(level, exams)
+      )}
+
+      {modalOpen && editExam && (
+        <div className="fixed inset-0 backdrop-blur-sm bg-black bg-opacity-30 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg w-96">
+            <h2 className="text-lg font-bold mb-4 text-center">
+              Modifier l'examen
+            </h2>
+
+            <label className="block mb-2">
+              Jour:
+              <input
+                type="date"
+                className="w-full border px-2 py-1 rounded"
+                value={editExam.jour}
+                onChange={(e) =>
+                  setEditExam({ ...editExam, jour: e.target.value })
+                }
+              />
+            </label>
+
+            <label className="block mb-2">
+              Début:
+              <input
+                type="time"
+                className="w-full border px-2 py-1 rounded"
+                value={editExam.debut}
+                onChange={(e) =>
+                  setEditExam({ ...editExam, debut: e.target.value })
+                }
+              />
+            </label>
+
+            <label className="block mb-2">
+              Fin:
+              <input
+                type="time"
+                className="w-full border px-2 py-1 rounded"
+                value={editExam.fin}
+                onChange={(e) =>
+                  setEditExam({ ...editExam, fin: e.target.value })
+                }
+              />
+            </label>
+
+            <label className="block mb-4">
+              Salle:
+              <input
+                type="text"
+                className="w-full border px-2 py-1 rounded"
+                value={editExam.salle}
+                onChange={(e) =>
+                  setEditExam({ ...editExam, salle: e.target.value })
+                }
+              />
+            </label>
+
+            <div className="flex justify-between">
+              <button
+                className="bg-gray-500 text-white px-4 py-2 rounded"
+                onClick={() => setModalOpen(false)}
+              >
+                Annuler
+              </button>
+              <button
+                className="bg-blue-500 text-white px-4 py-2 rounded"
+                onClick={handleUpdate}
+              >
+                Enregistrer
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

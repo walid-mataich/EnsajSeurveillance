@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import api from "../api/axios";
 import { use } from "framer-motion/client";
 import { color } from "framer-motion";
+import ChoixBySurv from "./ChoixBySurv";
 
 //ta ytzad f espace surveillant
 //composent pour le choix des crenaux pour les surveillants
@@ -90,10 +91,12 @@ const Cren = () => {
       top: rect.top + window.scrollY,
       left: rect.left + window.scrollX,
     });
+    console.log(groupedExams);
   };
 
   const handleColorSelect = (color) => {
     setButtonColors((prevColors) => ({ ...prevColors, [selectedExam]: color }));
+    console.table(buttonColors);
     setSelectedExam(null);
   };
 
@@ -103,6 +106,7 @@ const Cren = () => {
     acc[date].push(exam);
     return acc;
   }, {});
+  6;
 
   return (
     <>
@@ -198,6 +202,7 @@ const Cren = () => {
           </button>
         </div>
       </div>
+      <ChoixBySurv />
     </>
   );
 };
