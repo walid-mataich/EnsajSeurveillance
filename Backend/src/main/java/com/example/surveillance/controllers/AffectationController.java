@@ -6,6 +6,7 @@ import com.example.surveillance.entity.Salle;
 import com.example.surveillance.entity.Surveillant;
 import com.example.surveillance.repositories.*;
 import com.example.surveillance.services.AffectationService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +17,7 @@ import java.util.List;
 @RequestMapping("/affectations")
 public class AffectationController {
 
+    @Autowired
     private final AffectationService affectationService;
 
 

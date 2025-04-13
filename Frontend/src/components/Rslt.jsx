@@ -20,11 +20,16 @@ const PlanningTable = ({ niveau, affectations }) => {
       const slotKey = `${a.examen.debut}–${a.examen.fin} - ${a.examen.matiere.nomMatiere}`;
       if (!temp[date]) temp[date] = {};
       if (!temp[date][slotKey]) temp[date][slotKey] = {};
-      temp[date][slotKey][a.salle.nomSale] = a.surveillant.nom;
+      if (!temp[date][slotKey][a.salle.nomSale]) {
+        temp[date][slotKey][a.salle.nomSale] = [];
+      }
+      temp[date][slotKey][a.salle.nomSale].push(a.surveillant.nom);
     });
 
     // Sort dates and their slots
-    const sortedDateKeys = Object.keys(temp).sort((a, b) => new Date(a) - new Date(b));
+    const sortedDateKeys = Object.keys(temp).sort(
+      (a, b) => new Date(a) - new Date(b)
+    );
     const sortedSlots = {};
     sortedDateKeys.forEach((date) => {
       const slots = Object.entries(temp[date]).sort((a, b) => {
@@ -86,8 +91,11 @@ const PlanningTable = ({ niveau, affectations }) => {
               <td className="border px-2 py-1 font-medium">{salle}</td>
               {sortedDates.map((date) =>
                 Object.values(slotsByDate[date]).map((slot) => (
-                  <td key={`${salle}-${date}-${Math.random()}`} className="border px-2 py-1">
-                    {slot[salle] || ""}
+                  <td
+                    key={`${salle}-${date}-${Math.random()}`}
+                    className="border px-2 py-1"
+                  >
+                    {slot[salle] ? slot[salle].join(", ") : ""}
                   </td>
                 ))
               )}
@@ -104,7 +112,7 @@ const Rslt = () => {
 
   useEffect(() => {
     api
-      .get("/affectations") 
+      .get("/affectations")
       .then((res) => {
         console.log("Affectations:", res.data);
         setAffectations(res.data);
