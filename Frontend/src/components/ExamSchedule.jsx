@@ -7,6 +7,8 @@ const ExamSchedule = () => {
   const [error, setError] = useState(null);
   const [editExam, setEditExam] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [salles, setSalles] = useState([]);
+  const [sallesChoisies, setSallesChoisies] = useState([]);
 
   useEffect(() => {
     const fetchExams = async () => {
@@ -22,6 +24,18 @@ const ExamSchedule = () => {
     fetchExams();
   }, []);
 
+  useEffect(() => {
+    const fetchExams = async () => {
+      try {
+        const response = await api.get("/salles");
+        setSalles(response.data);
+      } catch (err) {
+        console.log("Échec du chargement des données");
+      }
+    };
+    fetchExams();
+  }, []);
+
   const handleEdit = (exam) => {
     setEditExam({ ...exam });
     setModalOpen(true);
@@ -29,12 +43,16 @@ const ExamSchedule = () => {
 
   const handleUpdate = async () => {
     try {
-      await api.put(`/examen/modifier/${editExam.idExamen}`, {
-        jour: editExam.jour,
-        debut: editExam.debut,
-        fin: editExam.fin,
-        nbrDesSalles: editExam.salle,
-      });
+      await api.put(
+        `/examen/modifier?id=${editExam.idExamen}` +
+          `${sallesChoisies.map((salle) => `&idSalle=${salle}`).join("")}`,
+        {
+          jour: editExam.jour,
+          debut: editExam.debut,
+          fin: editExam.fin,
+          nbrDesSalles: editExam.salle,
+        }
+      );
 
       setExams((prev) =>
         prev.map((ex) =>
@@ -243,7 +261,7 @@ const ExamSchedule = () => {
             </label>
 
             <label className="block mb-4">
-              Salle:
+              nbr Salle:
               <input
                 type="text"
                 className="w-full border px-2 py-1 rounded"
@@ -253,6 +271,28 @@ const ExamSchedule = () => {
                 }
               />
             </label>
+            <span className="text-lg font-medium text-gray-700">
+              les salles
+            </span>
+            {salles.map((salle) => (
+              <label key={salle.idSalle} className="flex items-center  gap-2">
+                <input
+                  type="checkbox"
+                  value={salle.idSalle}
+                  className="w-4 h-4"
+                  onChange={(e) => {
+                    const { value, checked } = e.target;
+                    setSallesChoisies((prev) =>
+                      checked
+                        ? [...prev, value]
+                        : prev.filter((id) => id !== value)
+                    );
+                  }}
+                  // à ajouter si tu veux gérer les salles sélectionnées
+                />
+                {salle.nomSale}
+              </label>
+            ))}
 
             <div className="flex justify-between">
               <button

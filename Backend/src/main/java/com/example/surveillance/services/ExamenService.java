@@ -69,6 +69,7 @@ public class ExamenService {
 
 
 
+
     public List<Examen> getAllExamen(){
         return examenRepository.findAllByOrderByJourAscDebutAsc();
     }
@@ -93,6 +94,7 @@ public class ExamenService {
             existingExamen.setDebut(updatedExamen.getDebut());
             existingExamen.setFin(updatedExamen.getFin());
             existingExamen.setNbrDesSalles(updatedExamen.getNbrDesSalles());
+            existingExamen.setSalles(updatedExamen.getSalles());
 
             if (matiereId != null){
                 Optional<Matiere> matiere = matiereRepositoriy.findById(matiereId);

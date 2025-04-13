@@ -2,11 +2,15 @@ package com.example.surveillance.controllers;
 
 
 import com.example.surveillance.entity.Examen;
+import com.example.surveillance.entity.Salle;
+import com.example.surveillance.repositories.SalleRepository;
 import com.example.surveillance.services.ExamenService;
+import com.example.surveillance.services.SalleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -18,9 +22,13 @@ public class ExamenController {
     @Autowired
     private final ExamenService examenService;
 
+    @Autowired
+    private final SalleRepository salleRepository;
 
-    public ExamenController(ExamenService examenService) {
+
+    public ExamenController(ExamenService examenService, SalleRepository salleRepository) {
         this.examenService = examenService;
+        this.salleRepository = salleRepository;
     }
 
     @CrossOrigin(origins = "*")
@@ -55,8 +63,9 @@ public class ExamenController {
     }
 
     @CrossOrigin(origins = "*")
-    @PutMapping("/modifier/{id}")
-    public Examen updateExamen(@RequestBody Examen examen, @PathVariable Long id){
+    @PutMapping("/modifier")
+    public Examen updateExamen(@RequestBody Examen examen, @RequestParam Long id,@RequestParam Set<Integer> idSalle){
+        examen.setSalles(new HashSet<>(salleRepository.findAllById(idSalle)));
         return examenService.updateExamen(examen, id);
     }
 
