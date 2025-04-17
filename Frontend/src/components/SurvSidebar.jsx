@@ -69,11 +69,11 @@ const SurvSidebar = () => {
               <SquarePen />
             </SidebarItem> */}
 
-            <SidebarItem text="Notification" path="/admin/Notif">
+            <SidebarItem text="Notification" path="/Surv/Notif">
               <BellRing />
             </SidebarItem>
 
-            <SidebarItem text="Profile" path="/admin/profile">
+            <SidebarItem text="Profile" path="/Surv/profile">
               <CircleUser />
             </SidebarItem>
           </ul>

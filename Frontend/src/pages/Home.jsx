@@ -6,8 +6,8 @@ import Footer from '../components/Footer';
 
 
 const Home = () => {
-  localStorage.removeItem("jwtTokensurv");
-  localStorage.removeItem("jwtTokenadmin");
+  localStorage.clear();
+
   return (
     <div>
       <Navbar/>

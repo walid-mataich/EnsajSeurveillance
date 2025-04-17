@@ -31,6 +31,23 @@ const Cren = () => {
     };
     fetchSurv();
   }, []);
+  
+  useEffect(()=>{
+    const fetchUserConnecter = async() =>{
+      try {
+        const response = await api.get("surveillants/userConnecter");
+        const surv=(response.data);
+        console.log(response.data);
+      setSurvId(surv.id);
+    } catch (error) {
+      console.error(
+        "Erreur lors de la récupération du surveillant connecter",
+        error
+      );
+    }
+  }
+  fetchUserConnecter();
+},[]);
 
   //recupere les exams pour recupere les creneaux
   useEffect(() => {
@@ -46,14 +63,14 @@ const Cren = () => {
     };
     fetchExams();
   }, []);
-
+  
   //fonction pour enregistrer les choix dans la base de donnees
   const handleSubmit = async () => {
     const tempChoices = Object.entries(buttonColors).map(([key, color]) => ({
       idExamen: key,
       ordre:
-        buttonColors[key] == "bg-red-500"
-          ? -1
+      buttonColors[key] == "bg-red-500"
+      ? -1
           : buttonColors[key] == "bg-yellow-300"
           ? 0
           : buttonColors[key] == "bg-green-500"
@@ -106,11 +123,11 @@ const Cren = () => {
     acc[date].push(exam);
     return acc;
   }, {});
-  6;
+  
 
   return (
     <>
-      <select
+      {/*<select
         value={survId}
         onChange={(e) => setSurvId(e.target.value)}
         required
@@ -122,7 +139,7 @@ const Cren = () => {
             {surveillant.nom}
           </option>
         ))}
-      </select>
+      </select>*/}
       <div className="container mx-auto p-4">
         <div className="mb-4 p-3 bg-gray-100 rounded-lg text-center">
           <p className="text-gray-700">
@@ -202,7 +219,7 @@ const Cren = () => {
           </button>
         </div>
       </div>
-      <ChoixBySurv />
+      {/*<ChoixBySurv />*/}
     </>
   );
 };

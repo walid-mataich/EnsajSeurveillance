@@ -4,8 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import api from './../api/axios';
 
 function AdminLogin() {
-    localStorage.removeItem("jwtTokenadmin");
-    localStorage.removeItem("jwtTokensurv");
+    localStorage.clear();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');

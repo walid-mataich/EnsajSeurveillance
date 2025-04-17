@@ -4,12 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import api from './../api/axios';
 
 function SurvLogin() {
-    localStorage.removeItem("jwtTokensurv");
-    localStorage.removeItem("jwtTokenadmin");
+    localStorage.clear();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
+   
 
     const handleLogin = async () => {
         try {

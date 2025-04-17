@@ -1,5 +1,6 @@
 package com.example.surveillance.controllers;
 
+import com.example.surveillance.SecurityConfig.JwtConstant;
 import com.example.surveillance.entity.Examen;
 import com.example.surveillance.entity.Surveillant;
 import com.example.surveillance.repositories.SurveillantRepository;
@@ -7,6 +8,7 @@ import com.example.surveillance.response.AuthResponse;
 import com.example.surveillance.services.SurveillantService;
 import com.example.surveillance.services.SurveillantServiceImplementation;
 import com.example.surveillance.SecurityConfig.JwtProvider;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.List;
 
@@ -101,6 +104,15 @@ public class SurveillantController {
     @GetMapping
     public List<Surveillant> getAllSurveillants() {
         return surveillantService.getAllSurveillants();
+    }
+    @GetMapping("/userConnecter")
+    public Surveillant userConnecter(@RequestHeader("Authorization") String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new RuntimeException("Token manquant ou invalide !");
+        }
+
+        String token = authHeader.substring(7); // Supprime "Bearer "
+        return customSurveillantDetails.findSurveillantProfileByJwt(token);
     }
 }
 

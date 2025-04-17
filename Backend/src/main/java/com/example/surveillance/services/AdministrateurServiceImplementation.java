@@ -1,5 +1,6 @@
 package com.example.surveillance.services;
 
+import com.example.surveillance.SecurityConfig.JwtProvider;
 import com.example.surveillance.repositories.AdministrateurRepository;
 import com.example.surveillance.entity.Administrateur;
 import com.example.surveillance.services.ServiceAuthen.AdministrateurService;
@@ -51,7 +52,10 @@ public class AdministrateurServiceImplementation implements AdministrateurServic
     // 🔹 (Cette méthode doit être implémentée en fonction de votre JWT provider)
     @Override
     public Administrateur findAdministrateurProfileByJwt(String jwt) {
-        // TODO: Ajouter la logique pour extraire l'email depuis le JWT et récupérer l'admin
+        String email = JwtProvider.getEmailFromJwtToken(jwt);
+        if (email != null) {
+            return administrateurRepository.findByEmail(email);
+        }
         return null;
     }
 
