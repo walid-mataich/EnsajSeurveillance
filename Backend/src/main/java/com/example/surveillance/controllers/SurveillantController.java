@@ -1,5 +1,6 @@
 package com.example.surveillance.controllers;
 
+import com.example.surveillance.entity.Examen;
 import com.example.surveillance.entity.Surveillant;
 import com.example.surveillance.repositories.SurveillantRepository;
 import com.example.surveillance.response.AuthResponse;
@@ -64,6 +65,11 @@ public class SurveillantController {
         authResponse.setStatus(true);
 
         return new ResponseEntity<>(authResponse, HttpStatus.OK);
+    }
+    @PostMapping("/add")
+    public ResponseEntity<Surveillant> addServeillant(@RequestBody Surveillant surveillant) {
+        Surveillant savedSurveillant=surveillantService.createSurveillant(surveillant);
+        return ResponseEntity.ok(savedSurveillant);
     }
 
     private Authentication authenticate(String username, String password) {

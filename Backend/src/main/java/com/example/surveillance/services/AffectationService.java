@@ -40,7 +40,6 @@ public class AffectationService {
         for (Examen exam : exams) {
             for (int i = 0; i < exam.getNbrDesSalles(); i++) {
                 Salle salle = new Salle(i + 1, "B" + (i + 1));
-
                 Surveillant best = findBestSurveillant(exam, surveillantChoixMap, maxAssignments);
                 if (best != null) {
                     Affectation a = new Affectation();
@@ -61,7 +60,7 @@ public class AffectationService {
                 .flatMap(List::stream)
                 .filter(c -> c.getExamen().equals(exam))
                 .map(Choix::getSurveillant)
-                .filter(s -> s.getNbrSurveillance() < maxAssignments)
+                .filter(s -> s.getNbrSurveillance() < maxAssignments)//les surveillant li daro chois dlexam o li nbr s.getNbrSurveillance() < maxAssignments
                 .sorted(Comparator
                         .comparingInt((Surveillant s) -> s.getNbrSurveillance())
                         .thenComparing(s -> getPreferenceForExam(s, exam, choices.get(s.getId())), Comparator.reverseOrder()))

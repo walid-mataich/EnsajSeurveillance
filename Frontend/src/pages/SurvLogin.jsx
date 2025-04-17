@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import api from './../api/axios';
 
 function SurvLogin() {
     localStorage.removeItem("jwtTokensurv");
@@ -18,7 +19,7 @@ function SurvLogin() {
             }
 
             // Changer l'URL pour l'authentification surveillant
-            const response = await axios.post('http://localhost:8080/surveillants/signin', { email, password });
+            const response = await api.post('/surveillants/signin', { email, password });
             console.log('Connexion réussie:', response.data);
             localStorage.setItem("jwtTokensurv", response.data.jwt);
             navigate('/surv'); // Redirection vers la page surveillant après connexion

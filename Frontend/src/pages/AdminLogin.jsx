@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import api from './../api/axios';
 
 function AdminLogin() {
     localStorage.removeItem("jwtTokenadmin");
@@ -17,7 +18,7 @@ function AdminLogin() {
                 return;
             }
 
-            const response = await axios.post('http://localhost:8080/authAdmin/signin', { email, password });
+            const response = await api.post('/authAdmin/signin', { email, password });
             console.log('Connexion réussie:', response.data);
             localStorage.setItem("jwtTokenadmin", response.data.jwt);
             navigate('/admin');
