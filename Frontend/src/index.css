@@ -1,2 +1,28 @@
 @import "tailwindcss";
 
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .rslt-container,
+  .rslt-container * {
+    visibility: visible;
+  }
+
+  .rslt-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+
+  .print\:page-break-after {
+    page-break-after: always;
+  }
+
+  @page {
+    size: A4 portrait;
+    margin: 10mm;
+  }
+}

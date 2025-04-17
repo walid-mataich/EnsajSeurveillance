@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import api from "../api/axios";
+import LoadingPulse from "./LoadingPulse";
 
 const PlanningTable = ({ niveau, affectations }) => {
   const [slotsByDate, setSlotsByDate] = useState({});
@@ -46,11 +47,11 @@ const PlanningTable = ({ niveau, affectations }) => {
   }, [affectations, niveau]);
 
   return (
-    <div className="overflow-auto mb-10">
+    <div className="w-full overflow-auto mb-10">
       <h2 className="text-xl font-bold text-center mb-4">
         Planning de Surveillance / 2AP - {niveau}
       </h2>
-      <table className="min-w-full table-auto border border-gray-300 text-sm text-center bg-white shadow">
+      <table className="min-w-full table-auto border border-gray-300 text-sm text-center bg-white shadow print:shadow-none print:text-xs print:border print:min-w-full">
         <thead>
           {/* First row: Date headers with colspan */}
           <tr className="bg-gray-200">
@@ -109,6 +110,19 @@ const PlanningTable = ({ niveau, affectations }) => {
 
 const Rslt = () => {
   const [affectations, setAffectations] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const handleGenerate = async () => {
+    setLoading(true);
+    try {
+      await api.post("/affectations/generate");
+      window.location.reload();
+    } catch (error) {
+      console.error("Erreur de génération :", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     api
@@ -121,12 +135,32 @@ const Rslt = () => {
   }, []);
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold text-center mb-8">
-        Planning de Surveillance - Année Universitaire 2024/2025
-      </h1>
-      <PlanningTable niveau={1} affectations={affectations} />
-      <PlanningTable niveau={2} affectations={affectations} />
+    <div className="rslt-container text-center print:block print:p-4 print:bg-white print:text-black">
+      <button
+        onClick={() => handleGenerate()}
+        className="px-12 m-10 bg-blue-700 py-2 rounded cursor-pointer text-white print:hidden"
+      >
+        {loading ? "Génération en cours..." : "Générer"}
+      </button>
+
+      {affectations.length != 0 && (
+        <>
+          <h1 className="text-2xl font-bold text-center mb-8 print:text-lg">
+            Planning de Surveillance - Année Universitaire 2024/2025
+          </h1>
+          <PlanningTable niveau={1} affectations={affectations} />
+          <div className="hidden print:block print:page-break-after" />
+          <PlanningTable niveau={2} affectations={affectations} />
+
+          <button
+            onClick={() => window.print()}
+            className="px-12 m-10 bg-blue-700 py-2 rounded cursor-pointer text-white print:hidden"
+          >
+            Imprimer
+          </button>
+        </>
+      )}
+      {loading && <LoadingPulse />}
     </div>
   );
 };
