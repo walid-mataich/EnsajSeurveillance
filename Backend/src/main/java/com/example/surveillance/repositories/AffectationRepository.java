@@ -10,7 +10,6 @@ import java.util.List;
 
 @Repository
 public interface AffectationRepository extends JpaRepository<Affectation, Integer> {
-
     List<Affectation> findBySurveillant(Surveillant surveillant);
 //    List<Affectation> findBySurveillantId(Long id);
 }

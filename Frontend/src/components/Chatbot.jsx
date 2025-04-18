@@ -46,20 +46,37 @@ const ChatBot = () => {
     <div className="fixed bottom-4 right-4 z-50">
       {/* Toggle Button */}
       <button
-        className="chatbot-toggle bg-blue-600 text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-110"
+        className="chatbot-toggle bg-blue-600 text-white w-18 h-18 rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-110 my-6 mx-4"
         onClick={() => setIsOpen(!isOpen)}
       >
-        <img src="/chat.jpg" alt="Chatbot" className="w-8 h-8 rounded-full" />
+        {isOpen ? (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-6 h-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        ) : (
+          <img src="/chat.jpg" alt="Chatbot" className="w-16 h-16 rounded-full" />
+        )}
       </button>
 
       {/* Chatbot Container */}
       {isOpen && (
         <div
-          className={`chatbot-container fixed bottom-20 right-4 w-96 bg-white rounded-lg shadow-xl overflow-hidden transform transition-all duration-300 ${
+          className={`chatbot-container fixed bottom-20 right-4 w-96 my-9 mx-5 bg-white rounded-lg shadow-xl overflow-hidden transform transition-all duration-300 ${
             isOpen ? "opacity-100 scale-100" : "opacity-0 scale-95"
           }`}
         >
-          <div className="chatbot-card flex flex-col h-[400px]">
+          <div className="chatbot-card flex flex-col h-[600px]">
             {/* Header */}
             <div className="chatbot-header bg-blue-600 text-white flex items-center justify-center py-2">
               <img
