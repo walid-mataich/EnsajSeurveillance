@@ -13,4 +13,5 @@ public interface AffectationRepository extends JpaRepository<Affectation, Intege
 
     List<Affectation> findBySurveillant(Surveillant surveillant);
 //    List<Affectation> findBySurveillantId(Long id);
+
 }

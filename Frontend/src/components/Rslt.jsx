@@ -19,6 +19,7 @@ const PlanningTable = ({ niveau, affectations }) => {
       salleSet.add(a.salle.nomSale);
       const date = a.examen.jour;
       const slotKey = `${a.examen.debut}–${a.examen.fin} - ${a.examen.matiere.nomMatiere}`;
+
       if (!temp[date]) temp[date] = {};
       if (!temp[date][slotKey]) temp[date][slotKey] = {};
       if (!temp[date][slotKey][a.salle.nomSale]) {
@@ -31,15 +32,30 @@ const PlanningTable = ({ niveau, affectations }) => {
     const sortedDateKeys = Object.keys(temp).sort(
       (a, b) => new Date(a) - new Date(b)
     );
+
+    // console.log("Sorted Date Keys:", sortedDateKeys);
+
     const sortedSlots = {};
+    // console.log("Temp:", temp);
     sortedDateKeys.forEach((date) => {
       const slots = Object.entries(temp[date]).sort((a, b) => {
         const [aStart] = a[0].split("–");
         const [bStart] = b[0].split("–");
+        // console.log("aStart:", aStart, "bStart:", bStart);
+        // console.log("a:", a, "b:", b);
+        // console.log("aStart:", aStart, "bStart:", bStart);
+        
         return aStart.localeCompare(bStart);
+        
       });
+      // console.log("Slots:", slots);
+      
       sortedSlots[date] = Object.fromEntries(slots);
     });
+
+    // console.log("Sorted Slots:", sortedSlots);
+
+    
 
     setSlotsByDate(sortedSlots);
     setSortedDates(sortedDateKeys);
@@ -76,6 +92,7 @@ const PlanningTable = ({ niveau, affectations }) => {
             <th className="border px-2 py-1"></th>
             {sortedDates.map((date) =>
               Object.keys(slotsByDate[date]).map((slotKey, idx) => (
+                
                 <th key={`${date}-${idx}`} className="border px-2 py-1">
                   {slotKey.split(" - ")[1]} <br />
                   <span className="text-xs text-gray-600">
@@ -111,11 +128,35 @@ const PlanningTable = ({ niveau, affectations }) => {
 const Rslt = () => {
   const [affectations, setAffectations] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [nbSurvC, setNbSurvC] = useState(0);
+
+  useEffect(() => {
+    try {
+      api.get("/choix").then((res) => {
+        setNbSurvC(res.data);
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  }, []);
 
   const handleGenerate = async () => {
     setLoading(true);
     try {
       await api.post("/affectations/generate");
+      window.location.reload();
+    } catch (error) {
+      console.error("Erreur de génération :", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    setLoading(true);
+    try {
+      setLoading(true);
+      await api.delete("/affectations/deleteAll");
       window.location.reload();
     } catch (error) {
       console.error("Erreur de génération :", error);
@@ -137,15 +178,22 @@ const Rslt = () => {
   return (
     <div className="rslt-container text-center print:block print:p-4 print:bg-white print:text-black">
       <button
-        onClick={() => handleGenerate()}
+        onClick={() => {
+          affectations.length == 0 ? handleGenerate() : handleDelete();
+        }}
         className="px-12 m-10 bg-blue-700 py-2 rounded cursor-pointer text-white print:hidden"
       >
-        {loading ? "Génération en cours..." : "Générer"}
+        {affectations.length == 0
+          ? loading
+            ? "Génération en cours..."
+            : "Générer"
+          : "Réinitialiser"}
       </button>
 
       {affectations.length != 0 && (
         <>
           <h1 className="text-2xl font-bold text-center mb-8 print:text-lg">
+            {/* test : {nbSurvC} <br /> */}
             Planning de Surveillance - Année Universitaire 2024/2025
           </h1>
           <PlanningTable niveau={1} affectations={affectations} />

@@ -15,6 +15,17 @@ const Cren = () => {
   const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
   const [surveillants, setSurveillants] = useState([]);
   const [survId, setSurvId] = useState("");
+  const [choix, setChoix] = useState([]);
+
+  useEffect(() => {
+    try {
+      api.get(`/choix/${survId}`).then((res) => {
+        setChoix(res.data);
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  }, [survId]);
 
   // hadi ra gha bach njrbo 7it mazal ma drna auth
   useEffect(() => {
@@ -47,8 +58,31 @@ const Cren = () => {
     fetchExams();
   }, []);
 
+  const getExamsByChefModule = (exams, chefId) => {
+    return exams.filter((exam) => exam.matiere.chefDeModule.id == chefId);
+  };
+
   //fonction pour enregistrer les choix dans la base de donnees
   const handleSubmit = async () => {
+    const examsChef = getExamsByChefModule(exams, survId);
+    console.log("Exams for the selected chef:", examsChef);
+
+    if (examsChef.length != 0) {
+      const updatedColors = { ...buttonColors };
+      for (const exam of examsChef) {
+        updatedColors[exam.idExamen] = "bg-red-500";
+      }
+      setButtonColors(updatedColors);
+    }
+
+    console.table(buttonColors);
+
+    const nonChoisisExamsIds = exams
+      .map((exam) => exam.idExamen)
+      .filter((id) => !(id in buttonColors));
+
+    console.log("Liste des ID des examens:", nonChoisisExamsIds);
+
     const tempChoices = Object.entries(buttonColors).map(([key, color]) => ({
       idExamen: key,
       ordre:
@@ -60,6 +94,23 @@ const Cren = () => {
           ? 1
           : 0,
     }));
+
+    console.log("tempChoices:", tempChoices);
+
+    if (nonChoisisExamsIds.length > 0) {
+      const confirm = window.confirm(
+        `Vous n'avez pas choisi de préférence pour ${nonChoisisExamsIds.length} examen(s). Voulez-vous continuer ?`
+      );
+      if (!confirm) return;
+      else {
+        for (const id of nonChoisisExamsIds) {
+          tempChoices.push({
+            idExamen: id,
+            ordre: 0,
+          });
+        }
+      }
+    }
 
     for (const choice of tempChoices) {
       try {
@@ -91,7 +142,6 @@ const Cren = () => {
       top: rect.top + window.scrollY,
       left: rect.left + window.scrollX,
     });
-    console.log(groupedExams);
   };
 
   const handleColorSelect = (color) => {
@@ -138,23 +188,29 @@ const Cren = () => {
             🟢 Vert : C'est favorable
           </p>
         </div>
+
         <div>
           {Object.entries(groupedExams).map(([day, exams]) => (
             <div key={day} className="bg-white shadow-md rounded-lg mb-4 p-4">
               <h2 className="text-lg font-semibold text-gray-800 mb-2">
-                {new Date(day).toLocaleDateString("fr-FR", { weekday: "long" })}{" "}
+                {new Date(day).toLocaleDateString("fr-FR", {
+                  weekday: "long",
+                })}{" "}
                 - {day}
               </h2>
               <div className="grid grid-cols-2 gap-2">
                 {exams.map((exam) => (
                   <button
                     key={exam.idExamen}
-                    className={`py-2 px-4 rounded-lg shadow-md transition duration-200 text-black border border-gray-400 cursor-cell ${
-                      buttonColors[exam.idExamen] || "bg-white"
+                    className={`py-2 px-4 rounded-lg shadow-md transition duration-200 text-black border border-gray-400 cursor-cell  ${
+                      exam.matiere.chefDeModule.id == survId
+                        ? " cursor-not-allowed bg-red-500"
+                        : buttonColors[exam.idExamen] || "bg-white"
                     }`}
-                    onClick={(event) =>
-                      handleOpenColorPicker(exam.idExamen, event)
-                    }
+                    onClick={(event) => {
+                      exam.matiere.chefDeModule.id != survId &&
+                        handleOpenColorPicker(exam.idExamen, event);
+                    }}
                   >
                     {exam.debut} - {exam.fin}
                   </button>
@@ -163,6 +219,7 @@ const Cren = () => {
             </div>
           ))}
         </div>
+
         {selectedExam && (
           <div
             className="absolute p-4 bg-white shadow-lg rounded-lg border border-gray-300"
@@ -193,6 +250,7 @@ const Cren = () => {
             </div>
           </div>
         )}
+
         <div className="text-center mt-6">
           <button
             className="bg-blue-500 text-white py-2 px-6 rounded-lg shadow-md hover:bg-blue-600 transition"
@@ -202,7 +260,6 @@ const Cren = () => {
           </button>
         </div>
       </div>
-      <ChoixBySurv />
     </>
   );
 };
