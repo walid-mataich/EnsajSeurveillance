@@ -87,7 +87,7 @@ const Cren = () => {
 
     const nonChoisisExamsIds = exams
       .map((exam) => exam.idExamen)
-      .filter((id) => !(id in buttonColors));
+      .filter((id) => !(id in updatedColors));
 
     console.log("Liste des ID des examens:", nonChoisisExamsIds);
 
