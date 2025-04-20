@@ -1,4 +1,4 @@
-import { useState } from "react";
+
 import api from "../api/axios";
 import { useEffect, useState } from "react";
 import { label, li, p } from "framer-motion/client";
@@ -10,6 +10,14 @@ const SurveillantsManag = () => {
   const [exams, setExams] = useState([]);
   const [nbSurveillance, setNbSurveillance] = useState(0);
   const [besoin, setBesoin] = useState(false);
+  const [email, setEmail] = useState("");
+  const [nom, setNom] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [type, setType] = useState("");
+  const [message, setMessage] = useState("");
+  const [ajouter,setAjouter]=useState(false);
 
   const [msg, setMsg] = useState(``);
 
@@ -58,14 +66,7 @@ const SurveillantsManag = () => {
 
 
   }, [nbSurveillance]);
-  const [email, setEmail] = useState("");
-  const [nom, setNom] = useState("");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [type, setType] = useState("");
-  const [message, setMessage] = useState("");
-  const [ajouter,setAjouter]=useState(false);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
