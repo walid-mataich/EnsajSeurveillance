@@ -1,19 +1,27 @@
 import React from "react";
 import api from "../api/axios";
 import { useEffect, useState } from "react";
-import { li } from "framer-motion/client";
+import { label, li, p } from "framer-motion/client";
+import MultiSelectSurveillants from "../components/MultiSelectSurveillants";
 
 const SurveillantsManag = () => {
   const [surveillants, setSurveillants] = useState([]);
+  const [exams, setExams] = useState([]);
+  const [nbSurveillance, setNbSurveillance] = useState(0);
+  const [besoin, setBesoin] = useState(false);
+
+  const [msg, setMsg] = useState(``);
 
   useEffect(() => {
     const fetchSurv = async () => {
       try {
-        const response = await api.get("surveillants");
-        setSurveillants(response.data);
+        const survs = await api.get("surveillants");
+        const exs = await api.get("examen/all");
+        setSurveillants(survs.data);
+        setExams(exs.data);
       } catch (error) {
         console.error(
-          "Erreur lors de la récupération des surveillants:",
+          "Erreur lors de la récupération des surveillants et examens:",
           error
         );
       }
@@ -21,52 +29,47 @@ const SurveillantsManag = () => {
     fetchSurv();
   }, []);
 
+  useEffect(() => {
+    const nbSalle = exams.reduce((acc, exam) => {
+      return (
+        acc +
+        exam.salles.reduce((acc, salle) => {
+          return acc + salle.nbrDeSurveillant;
+        }, 0)
+      );
+    }, 0);
+    console.log("nbSalle:", nbSalle);
+
+    const actifSurvs = surveillants.filter((surv) => surv.actif === true);
+    
+    const calculNbSurv = Math.ceil(nbSalle / actifSurvs.length);
+    console.log("calculNbSurv:", calculNbSurv);
+
+    if (calculNbSurv > parseInt(nbSurveillance) ) {
+      
+      setMsg(`le nombre de surveillants est insuffisant, ajouter des surveillants`);
+      setBesoin(true);
+         
+    }else{
+      setMsg(`le nombre de surveillants est suffisant`);
+      setBesoin(false);
+    }
+
+
+  }, [nbSurveillance]);
+
   return (
     <>
-      <div className="flex">
-        <table>
-        <thead className="text-xs text-gray-700 uppercase bg-gray-200  ">
-            <tr >
-                <th scope="col" className="px-6 py-3 ">
-                    Nom
-                </th>
-                <th scope="col" className="px-6 py-3">
-                    Email
-                </th>
-                <th scope="col" className="px-6 py-3">
-                   Type
-                </th>
-                <th scope="col" className="px-6 py-3">
-                    Action
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-        {surveillants.map((surv) => (
-            <tr className="bg-gray-50">
-            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap ">
-                {surv.nom}
-            </th>
-            <td class="px-6 py-4">
-                {surv.email}
-            </td>
-            <td class="px-6 py-4">
-                {surv.type}
-            </td>
-            <td class="px-6 py-4">
-                <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">modifier</a>
-            </td>
-        </tr>
-          ))}
-          </tbody>
-          </table>
-
-        {/* <ul>
-          {surveillants.map((surv) => (
-            <li key={surv.id}>{surv.nom}</li>
-          ))}
-        </ul> */}
-      </div>
+      <label htmlFor="nbrDesurveillance">
+        {" "}
+        entre le nombre maximal de surveillances par surveillants
+      </label>
+      <input
+        type="text"
+        className="border-1 mx-3 rounded p-1"
+        onChange={(e) => setNbSurveillance(e.target.value)}
+      />
+      {besoin && (<><MultiSelectSurveillants surveillants={surveillants.filter((s)=> !s.actif)}/></>)}
     </>
   );
 };

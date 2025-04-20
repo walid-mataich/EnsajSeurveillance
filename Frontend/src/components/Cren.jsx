@@ -64,18 +64,26 @@ const Cren = () => {
 
   //fonction pour enregistrer les choix dans la base de donnees
   const handleSubmit = async () => {
-    const examsChef = getExamsByChefModule(exams, survId);
-    console.log("Exams for the selected chef:", examsChef);
+    const updatedColors = { ...buttonColors };
 
-    if (examsChef.length != 0) {
-      const updatedColors = { ...buttonColors };
+    const examsChef = getExamsByChefModule(exams, survId);
+    if (examsChef.length !== 0) {
       for (const exam of examsChef) {
         updatedColors[exam.idExamen] = "bg-red-500";
       }
-      setButtonColors(updatedColors);
     }
 
-    console.table(buttonColors);
+    console.log("Exams for the selected chef:", examsChef);
+
+    // if (examsChef.length != 0) {
+    //   const updatedColors = { ...buttonColors };
+    //   for (const exam of examsChef) {
+    //     updatedColors[exam.idExamen] = "bg-red-500";
+    //   }
+    //   setButtonColors(updatedColors);
+    // }
+
+    // console.table(buttonColors);
 
     const nonChoisisExamsIds = exams
       .map((exam) => exam.idExamen)
@@ -83,14 +91,14 @@ const Cren = () => {
 
     console.log("Liste des ID des examens:", nonChoisisExamsIds);
 
-    const tempChoices = Object.entries(buttonColors).map(([key, color]) => ({
+    const tempChoices = Object.entries(updatedColors).map(([key, color]) => ({
       idExamen: key,
       ordre:
-        buttonColors[key] == "bg-red-500"
+        updatedColors[key] == "bg-red-500"
           ? -1
-          : buttonColors[key] == "bg-yellow-300"
+          : updatedColors[key] == "bg-yellow-300"
           ? 0
-          : buttonColors[key] == "bg-green-500"
+          : updatedColors[key] == "bg-green-500"
           ? 1
           : 0,
     }));

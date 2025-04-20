@@ -21,7 +21,7 @@ public class AffectationService {
         affectationRepo.deleteAll();
 
         List<Examen> examens = examenRepo.findAllByOrderByJourAscDebutAsc();
-        List<Surveillant> surveillants = surveillantRepo.findAll();
+        List<Surveillant> surveillants = surveillantRepo.findByActifTrue();
 
         int totalSlots = examens.stream().mapToInt(examen ->
                 examen.getSalles().stream().mapToInt(Salle::getNbrDeSurveillant).sum()

@@ -35,7 +35,8 @@ public class Surveillant {
     private Boolean tkw;
 
     
-
+    @NotBlank
+    private Boolean actif;
 
 
     @NotBlank(message = "Le mot de passe ne peut pas être vide")
@@ -54,15 +55,7 @@ public class Surveillant {
 
     private int nbrSurveillance = 0;
 
-    public Surveillant(String username, Long id, String nom, String email, String password,String type, int nbrSurveillance) {
-        this.username = username;
-        this.id = id;
-        this.nom = nom;
-        this.email = email;
-        this.password = password;
-        this.type = type;
-        this.nbrSurveillance = nbrSurveillance;
-    }
+
 
 
 
