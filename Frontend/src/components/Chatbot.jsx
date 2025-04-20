@@ -20,7 +20,7 @@ const ChatBot = () => {
 
     try {
       const res = await api.post(
-        "/api/chat",
+        "/chat",
         { prompt: input },
         { headers: { "Content-Type": "application/json" } }
       );

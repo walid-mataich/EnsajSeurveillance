@@ -17,14 +17,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/surveillants")
@@ -101,6 +97,19 @@ public class SurveillantController {
     @GetMapping
     public List<Surveillant> getAllSurveillants() {
         return surveillantService.getAllSurveillants();
+    }
+
+    @PutMapping("actif/{a}/{id}")
+    public void actif(@PathVariable boolean a, @PathVariable Long id) {
+        Optional<Surveillant> modified = surveillantRepository.findById(id);
+
+        if (modified.isPresent()) {
+            modified.get().setActif(a);
+            surveillantRepository.save(modified.get());
+        }else {
+            System.out.println("erreur lors de la modification");
+        }
+
     }
 }
 

@@ -12,4 +12,6 @@ import java.util.List;
 public interface AffectationRepository extends JpaRepository<Affectation, Integer> {
 
     List<Affectation> findBySurveillant(Surveillant surveillant);
+//    List<Affectation> findBySurveillantId(Long id);
+
 }

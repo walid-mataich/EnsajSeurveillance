@@ -2,6 +2,7 @@ package com.example.surveillance.controllers;
 
 
 import com.example.surveillance.entity.Choix;
+import com.example.surveillance.repositories.ChoixRepository;
 import com.example.surveillance.services.ChoixService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,8 +18,12 @@ public class ChoixController {
 
     private final ChoixService choixService;
 
-    public ChoixController(ChoixService choixService) {
+    @Autowired
+    private final ChoixRepository choixRepository;
+
+    public ChoixController(ChoixService choixService, ChoixRepository choixRepository) {
         this.choixService = choixService;
+        this.choixRepository = choixRepository;
     }
 
     @PostMapping("/choisir")
@@ -36,4 +41,11 @@ public class ChoixController {
     public List<Choix> getChoixBySurvId(@PathVariable Long id){
         return choixService.choixBySurv(id);
     }
+
+    @GetMapping()
+    int nbrSurveillantChoix(){
+        return choixRepository.countSurvAvecChoix();
+    }
+
+
 }

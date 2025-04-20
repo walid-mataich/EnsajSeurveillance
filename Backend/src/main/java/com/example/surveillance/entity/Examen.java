@@ -14,8 +14,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-
-
+import java.util.Set;
 
 
 @NoArgsConstructor
@@ -45,10 +44,13 @@ public class Examen {
 //    private List<Choix> lesChoix;
 
 
-
-//    @OneToMany(mappedBy = "examen")
-//    @JsonManagedReference("examen-affectation")
-//    private List<Affectation> affectations;
+    @ManyToMany
+    @JoinTable(
+            name = "salle_examen",
+            joinColumns = @JoinColumn(name = "id_examen"),
+            inverseJoinColumns = @JoinColumn(name = "id_salle")
+    )
+    Set<Salle> salles;
 
 
 

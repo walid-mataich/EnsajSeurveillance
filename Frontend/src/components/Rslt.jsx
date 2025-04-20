@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import api from "../api/axios";
+import LoadingPulse from "./LoadingPulse";
 
 const PlanningTable = ({ niveau, affectations }) => {
   const [slotsByDate, setSlotsByDate] = useState({});
@@ -18,22 +19,43 @@ const PlanningTable = ({ niveau, affectations }) => {
       salleSet.add(a.salle.nomSale);
       const date = a.examen.jour;
       const slotKey = `${a.examen.debut}–${a.examen.fin} - ${a.examen.matiere.nomMatiere}`;
+
       if (!temp[date]) temp[date] = {};
       if (!temp[date][slotKey]) temp[date][slotKey] = {};
-      temp[date][slotKey][a.salle.nomSale] = a.surveillant.nom;
+      if (!temp[date][slotKey][a.salle.nomSale]) {
+        temp[date][slotKey][a.salle.nomSale] = [];
+      }
+      temp[date][slotKey][a.salle.nomSale].push(a.surveillant.nom);
     });
 
     // Sort dates and their slots
-    const sortedDateKeys = Object.keys(temp).sort((a, b) => new Date(a) - new Date(b));
+    const sortedDateKeys = Object.keys(temp).sort(
+      (a, b) => new Date(a) - new Date(b)
+    );
+
+    // console.log("Sorted Date Keys:", sortedDateKeys);
+
     const sortedSlots = {};
+    // console.log("Temp:", temp);
     sortedDateKeys.forEach((date) => {
       const slots = Object.entries(temp[date]).sort((a, b) => {
         const [aStart] = a[0].split("–");
         const [bStart] = b[0].split("–");
+        // console.log("aStart:", aStart, "bStart:", bStart);
+        // console.log("a:", a, "b:", b);
+        // console.log("aStart:", aStart, "bStart:", bStart);
+        
         return aStart.localeCompare(bStart);
+        
       });
+      // console.log("Slots:", slots);
+      
       sortedSlots[date] = Object.fromEntries(slots);
     });
+
+    // console.log("Sorted Slots:", sortedSlots);
+
+    
 
     setSlotsByDate(sortedSlots);
     setSortedDates(sortedDateKeys);
@@ -41,11 +63,11 @@ const PlanningTable = ({ niveau, affectations }) => {
   }, [affectations, niveau]);
 
   return (
-    <div className="overflow-auto mb-10">
+    <div className="w-full overflow-auto mb-10">
       <h2 className="text-xl font-bold text-center mb-4">
         Planning de Surveillance / 2AP - {niveau}
       </h2>
-      <table className="min-w-full table-auto border border-gray-300 text-sm text-center bg-white shadow">
+      <table className="min-w-full table-auto border border-gray-300 text-sm text-center bg-white shadow print:shadow-none print:text-xs print:border print:min-w-full">
         <thead>
           {/* First row: Date headers with colspan */}
           <tr className="bg-gray-200">
@@ -70,6 +92,7 @@ const PlanningTable = ({ niveau, affectations }) => {
             <th className="border px-2 py-1"></th>
             {sortedDates.map((date) =>
               Object.keys(slotsByDate[date]).map((slotKey, idx) => (
+                
                 <th key={`${date}-${idx}`} className="border px-2 py-1">
                   {slotKey.split(" - ")[1]} <br />
                   <span className="text-xs text-gray-600">
@@ -86,8 +109,11 @@ const PlanningTable = ({ niveau, affectations }) => {
               <td className="border px-2 py-1 font-medium">{salle}</td>
               {sortedDates.map((date) =>
                 Object.values(slotsByDate[date]).map((slot) => (
-                  <td key={`${salle}-${date}-${Math.random()}`} className="border px-2 py-1">
-                    {slot[salle] || ""}
+                  <td
+                    key={`${salle}-${date}-${Math.random()}`}
+                    className="border px-2 py-1"
+                  >
+                    {slot[salle] ? slot[salle].join(", ") : ""}
                   </td>
                 ))
               )}
@@ -101,10 +127,47 @@ const PlanningTable = ({ niveau, affectations }) => {
 
 const Rslt = () => {
   const [affectations, setAffectations] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [nbSurvC, setNbSurvC] = useState(0);
+
+  useEffect(() => {
+    try {
+      api.get("/choix").then((res) => {
+        setNbSurvC(res.data);
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  }, []);
+
+  const handleGenerate = async () => {
+    setLoading(true);
+    try {
+      await api.post("/affectations/generate");
+      window.location.reload();
+    } catch (error) {
+      console.error("Erreur de génération :", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    setLoading(true);
+    try {
+      setLoading(true);
+      await api.delete("/affectations/deleteAll");
+      window.location.reload();
+    } catch (error) {
+      console.error("Erreur de génération :", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     api
-      .get("/affectations") 
+      .get("/affectations")
       .then((res) => {
         console.log("Affectations:", res.data);
         setAffectations(res.data);
@@ -113,12 +176,39 @@ const Rslt = () => {
   }, []);
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold text-center mb-8">
-        Planning de Surveillance - Année Universitaire 2024/2025
-      </h1>
-      <PlanningTable niveau={1} affectations={affectations} />
-      <PlanningTable niveau={2} affectations={affectations} />
+    <div className="rslt-container text-center print:block print:p-4 print:bg-white print:text-black">
+      <button
+        onClick={() => {
+          affectations.length == 0 ? handleGenerate() : handleDelete();
+        }}
+        className="px-12 m-10 bg-blue-700 py-2 rounded cursor-pointer text-white print:hidden"
+      >
+        {affectations.length == 0
+          ? loading
+            ? "Génération en cours..."
+            : "Générer"
+          : "Réinitialiser"}
+      </button>
+
+      {affectations.length != 0 && (
+        <>
+          <h1 className="text-2xl font-bold text-center mb-8 print:text-lg">
+            {/* test : {nbSurvC} <br /> */}
+            Planning de Surveillance - Année Universitaire 2024/2025
+          </h1>
+          <PlanningTable niveau={1} affectations={affectations} />
+          <div className="hidden print:block print:page-break-after" />
+          <PlanningTable niveau={2} affectations={affectations} />
+
+          <button
+            onClick={() => window.print()}
+            className="px-12 m-10 bg-blue-700 py-2 rounded cursor-pointer text-white print:hidden"
+          >
+            Imprimer
+          </button>
+        </>
+      )}
+      {loading && <LoadingPulse />}
     </div>
   );
 };

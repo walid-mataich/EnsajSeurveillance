@@ -1,12 +1,10 @@
 package com.example.surveillance.controllers;
 
 import com.example.surveillance.entity.Affectation;
-import com.example.surveillance.entity.Examen;
-import com.example.surveillance.entity.Salle;
-import com.example.surveillance.entity.Surveillant;
-import com.example.surveillance.repositories.*;
+import com.example.surveillance.mailing.MailService;
+import com.example.surveillance.repositories.AffectationRepository;
 import com.example.surveillance.services.AffectationService;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,12 +14,18 @@ import java.util.List;
 @RequestMapping("/affectations")
 public class AffectationController {
 
+    @Autowired
     private final AffectationService affectationService;
 
+    @Autowired
+    private final AffectationRepository affectationRepository;
+    @Autowired
+    private MailService mailService;
 
 
-    public AffectationController(AffectationService affectationService) {
+    public AffectationController(AffectationService affectationService, AffectationRepository affectationRepository) {
         this.affectationService = affectationService;
+        this.affectationRepository = affectationRepository;
     }
 
     @PostMapping("/generate")
@@ -34,5 +38,11 @@ public class AffectationController {
     public List<Affectation> getAllAffectations() {
         return affectationService.getAllAffectations();
     }
+
+    @DeleteMapping("/deleteAll")
+    public void deleteAllAffectations() {
+        affectationRepository.deleteAll();
+    }
+
 
 }

@@ -9,6 +9,20 @@ const ExamenForm = () => {
   const [nbrDesSalles, setNbrDesSalles] = useState(""); // Nouvel état
   const [matieres, setMatieres] = useState([]);
   const [message, setMessage] = useState("");
+  const [salles, setSalles] = useState([]);
+  const [sallesChoisies, setSallesChoisies] = useState([]);
+
+  useEffect(() => {
+    const fetchExams = async () => {
+      try {
+        const response = await api.get("/salles");
+        setSalles(response.data);
+      } catch (err) {
+        console.log("Échec du chargement des données");
+      }
+    };
+    fetchExams();
+  }, []);
 
   useEffect(() => {
     api
@@ -24,9 +38,14 @@ const ExamenForm = () => {
     const newExamen = { jour, debut, fin, nbrDesSalles }; // Inclure nbrDesSalles
 
     try {
-      await api.post(`/examen/add?matiereId=${matiereId}`, newExamen, {
-        headers: { "Content-Type": "application/json" },
-      });
+      await api.post(
+        `/examen/examSalle?matiereId=${matiereId}` +
+          `${sallesChoisies.map((salle) => `&idSalles=${salle}`).join("")}`,
+        newExamen,
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
       setMessage("Examen ajouté avec succès !");
       setJour("");
       setDebut("");
@@ -119,6 +138,29 @@ const ExamenForm = () => {
             className="mt-2 block w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
           />
         </label>
+
+        <div>
+          <span className="text-lg font-medium text-gray-700">les salles</span>
+          {salles.map((salle) => (
+            <label key={salle.idSalle} className="flex items-center  gap-2">
+              <input
+                type="checkbox"
+                value={salle.idSalle}
+                className="w-4 h-4"
+                onChange={(e) => {
+                  const { value, checked } = e.target;
+                  setSallesChoisies((prev) =>
+                    checked
+                      ? [...prev, value]
+                      : prev.filter((id) => id !== value)
+                  );
+                }}
+                // à ajouter si tu veux gérer les salles sélectionnées
+              />
+              {salle.nomSale}
+            </label>
+          ))}
+        </div>
 
         <button
           type="submit"

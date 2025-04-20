@@ -32,6 +32,13 @@ public class Surveillant {
     @Email(message = "cet email est nom valide")
     private String email;
 
+    private Boolean tkw;
+
+    
+    @NotBlank
+    private Boolean actif;
+
+
     @NotBlank(message = "Le mot de passe ne peut pas être vide")
     @Size(min = 8, max = 20, message = "Le mot de passe doit contenir entre 8 et 20 caractères")
     @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$",
@@ -48,15 +55,7 @@ public class Surveillant {
 
     private int nbrSurveillance = 0;
 
-    public Surveillant(String username, Long id, String nom, String email, String password,String type, int nbrSurveillance) {
-        this.username = username;
-        this.id = id;
-        this.nom = nom;
-        this.email = email;
-        this.password = password;
-        this.type = type;
-        this.nbrSurveillance = nbrSurveillance;
-    }
+
 
 
 

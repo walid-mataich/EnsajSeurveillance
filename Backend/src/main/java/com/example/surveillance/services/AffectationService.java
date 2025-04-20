@@ -1,9 +1,7 @@
 package com.example.surveillance.services;
 
-
 import com.example.surveillance.entity.*;
 import com.example.surveillance.repositories.*;
-import com.example.surveillance.util.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,61 +17,99 @@ public class AffectationService {
     @Autowired private AffectationRepository affectationRepo;
     @Autowired private SalleRepository salleRepo;
 
-
     public void assignSurveillance() {
-        List<Examen> exams = examenRepo.findAll();
-        List<Surveillant> surveillants = surveillantRepo.findAll();
-        int totalSlots = exams.stream().mapToInt(Examen::getNbrDesSalles).sum();
+        affectationRepo.deleteAll();
 
-        int maxAssignments;
+        List<Examen> examens = examenRepo.findAllByOrderByJourAscDebutAsc();
+        List<Surveillant> surveillants = surveillantRepo.findByActifTrue();
 
-        if (totalSlots % surveillants.size() != 0) {
-            maxAssignments = (totalSlots / surveillants.size()) + 1;
-        }else {
-            maxAssignments = (totalSlots / surveillants.size());
-        }
+        int totalSlots = examens.stream().mapToInt(examen ->
+                examen.getSalles().stream().mapToInt(Salle::getNbrDeSurveillant).sum()
+        ).sum();
 
-        Map<Long, List<Choix>> surveillantChoixMap = choixRepo.findAll().stream()
-                .filter(c -> c.getOrdre() >= 0)
-                .collect(Collectors.groupingBy(c -> c.getSurveillant().getId()));
+        int minAffectations = totalSlots / surveillants.size();
+        int maxAffectations = (int) Math.ceil((double) totalSlots / surveillants.size());
 
-        for (Examen exam : exams) {
-            for (int i = 0; i < exam.getNbrDesSalles(); i++) {
-                Salle salle = new Salle(i + 1, "B" + (i + 1));
-                Surveillant best = findBestSurveillant(exam, surveillantChoixMap, maxAssignments);
-                if (best != null) {
-                    Affectation a = new Affectation();
-                    a.setExamen(exam);
-                    a.setSalle(salle); // salle is not from DB
-                    a.setSurveillant(best);
-                    affectationRepo.save(a);
+        Map<Surveillant, Integer> affectationCount = new HashMap<>();
+        Map<Surveillant, List<Affectation>> affectationsParSurveillant = new HashMap<>();
 
-                    best.setNbrSurveillance(best.getNbrSurveillance() + 1);
-                    surveillantRepo.save(best);
+        surveillants.forEach(s -> {
+            affectationCount.put(s, 0);
+            affectationsParSurveillant.put(s, new ArrayList<>());
+        });
+
+        for (Examen examen : examens) {
+            for (Salle salle : examen.getSalles()) {
+                int nbrSurveillantsRequis = salle.getNbrDeSurveillant();
+
+                List<Surveillant> candidats = getCandidats(examen, surveillants, affectationCount, maxAffectations);
+
+                // Fallback for insufficient candidates
+                if (candidats.size() < nbrSurveillantsRequis) {
+                    List<Surveillant> extra = surveillants.stream()
+                            .filter(s -> getPreference(s, examen) > -1 && !candidats.contains(s))
+                            .collect(Collectors.toList());
+                    candidats.addAll(extra);
+                }
+
+                // Modified sorting: prioritize fairness then preference
+                Comparator<Surveillant> parAffectations = Comparator.comparingInt(affectationCount::get);
+                Comparator<Surveillant> parPreference =
+                        Comparator.comparingInt((Surveillant s) -> getPreference(s, examen))
+                                .reversed(); // Inversion claire
+
+                candidats.sort(
+                        parAffectations
+                                .thenComparing(parPreference)
+                                .thenComparing(Surveillant::getId)
+                );
+
+                int count = 0;
+                for (Surveillant candidat : candidats) {
+                    if (affectationCount.get(candidat) < maxAffectations
+                            && !hasConflict(candidat, examen, affectationsParSurveillant.get(candidat))
+                            && count < nbrSurveillantsRequis) {
+
+                        Affectation affectation = new Affectation();
+                        affectation.setExamen(examen);
+                        affectation.setSalle(salle);
+                        affectation.setSurveillant(candidat);
+                        affectationRepo.save(affectation);
+
+                        affectationsParSurveillant.get(candidat).add(affectation);
+                        affectationCount.put(candidat, affectationCount.get(candidat) + 1);
+                        count++;
+                    }
+                }
+
+                if (count < nbrSurveillantsRequis) {
+                    System.out.println("⚠️ Insufficient surveillants for Exam " + examen.getIdExamen()
+                            + " in Room " + salle.getNomSale());
                 }
             }
         }
+
+        surveillants.forEach(s -> {
+            s.setNbrSurveillance(affectationCount.get(s));
+            surveillantRepo.save(s);
+        });
     }
 
-    private Surveillant findBestSurveillant(Examen exam, Map<Long, List<Choix>> choices, int maxAssignments) {
-        return choices.values().stream()
-                .flatMap(List::stream)
-                .filter(c -> c.getExamen().equals(exam))
-                .map(Choix::getSurveillant)
-                .filter(s -> s.getNbrSurveillance() < maxAssignments)//les surveillant li daro chois dlexam o li nbr s.getNbrSurveillance() < maxAssignments
-                .sorted(Comparator
-                        .comparingInt((Surveillant s) -> s.getNbrSurveillance())
-                        .thenComparing(s -> getPreferenceForExam(s, exam, choices.get(s.getId())), Comparator.reverseOrder()))
-                .findFirst()
-                .orElse(null);
+    int getPreference(Surveillant s, Examen e) {
+        return choixRepo.findBySurveillantAndExamen(s, e)
+                .map(Choix::getOrdre)
+                .orElse(0);
     }
 
-    private int getPreferenceForExam(Surveillant s, Examen e, List<Choix> choices) {
-        return choices.stream()
-                .filter(c -> c.getExamen().equals(e))
-                .mapToInt(Choix::getOrdre)
-                .findFirst()
-                .orElse(-1);
+    boolean hasConflict(Surveillant s, Examen e, List<Affectation> affectations) {
+        return affectations.stream().anyMatch(a -> a.getExamen().conflictsWith(e));
+    }
+
+    List<Surveillant> getCandidats(Examen examen, List<Surveillant> surveillants,
+                                   Map<Surveillant, Integer> affectationCount, int max) {
+        return surveillants.stream()
+                .filter(s -> getPreference(s, examen) > -1 && affectationCount.get(s) < max)
+                .collect(Collectors.toList());
     }
 
     public List<Affectation> getAllAffectations() {
