@@ -22,8 +22,8 @@ public class Surveillant {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "le nom de profile est obligatoire")
-    private String username;
+    @NotBlank(message = "le prenom est obligatoire")
+    private String prenom;
 
     @NotBlank(message = "le nom est obligatoire")
     private String nom;
@@ -39,7 +39,7 @@ public class Surveillant {
    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
     private String role = "SURVEILLANT";
-
+    private Boolean firstEntry =true;
 
 
     @NotBlank(message = "Le type du serveillant est obligatoire")
@@ -48,8 +48,8 @@ public class Surveillant {
 
     private int nbrSurveillance = 0;
 
-    public Surveillant(String username, Long id, String nom, String email, String password,String type, int nbrSurveillance) {
-        this.username = username;
+    public Surveillant(String prenom, Long id, String nom, String email, String password,String type, int nbrSurveillance) {
+        this.prenom = prenom;
         this.id = id;
         this.nom = nom;
         this.email = email;

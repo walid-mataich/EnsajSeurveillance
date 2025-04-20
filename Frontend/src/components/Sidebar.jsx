@@ -4,6 +4,7 @@ import {
   LayoutDashboardIcon,
   NotebookPen,
   Users,
+  UserRoundPlus ,
   SquarePen,
   BellRing,
   CircleUser,
@@ -64,7 +65,11 @@ const Sidebar = () => {
             </SidebarItem>
 
             <SidebarItem text="Surveilants" path="/admin/Surveillants">
-              <Users />
+              <UserRoundPlus  />
+            </SidebarItem>
+
+            <SidebarItem text="Administrateurs" path="/admin/AdminManagement">
+              <UserRoundPlus  />
             </SidebarItem>
 
             <SidebarItem text="Assignation" path="/admin/Assignation">

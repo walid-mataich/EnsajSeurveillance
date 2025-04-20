@@ -1,11 +1,10 @@
 import { useState } from "react";
 import api from "../api/axios";
-import { green } from "@mui/material/colors";
 
 const SurveillantsManag = () => {
   const [email, setEmail] = useState("");
   const [nom, setNom] = useState("");
-  const [username, setUsername] = useState("");
+  const [prenom, setPrenom] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [type, setType] = useState("");
@@ -27,7 +26,7 @@ const SurveillantsManag = () => {
     const newSurveillant = {
       email,
       nom,
-      username,
+      prenom,
       password,
       type,
     };
@@ -38,7 +37,7 @@ const SurveillantsManag = () => {
       setAjouter(true);
       setEmail("");
       setNom("");
-      setUsername("");
+      setPrenom("");
       setPassword("");
       setConfirmPassword("");
       setType("");
@@ -66,6 +65,16 @@ const SurveillantsManag = () => {
             className="mt-1 w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400"
           />
         </label>
+        <label className="block text-sm font-medium text-gray-700">
+          prenom
+          <input
+            type="text"
+            value={prenom}
+            onChange={(e) => setPrenom(e.target.value)}
+            required
+            className="mt-1 w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400"
+          />
+        </label>
 
         <label className="block text-sm font-medium text-gray-700">
           Email
@@ -78,16 +87,6 @@ const SurveillantsManag = () => {
           />
         </label>
 
-        <label className="block text-sm font-medium text-gray-700">
-          Nom d'utilisateur
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-            className="mt-1 w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400"
-          />
-        </label>
 
         <label className="block text-sm font-medium text-gray-700">
           Mot de passe

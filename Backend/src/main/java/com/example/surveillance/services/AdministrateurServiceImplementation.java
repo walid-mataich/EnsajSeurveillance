@@ -1,6 +1,7 @@
 package com.example.surveillance.services;
 
 import com.example.surveillance.SecurityConfig.JwtProvider;
+import com.example.surveillance.entity.Surveillant;
 import com.example.surveillance.repositories.AdministrateurRepository;
 import com.example.surveillance.entity.Administrateur;
 import com.example.surveillance.services.ServiceAuthen.AdministrateurService;
@@ -73,5 +74,8 @@ public class AdministrateurServiceImplementation implements AdministrateurServic
                 administrateur.getPassword(),
                 authorities
         );
+    }
+    public Administrateur createAdministrateur(Administrateur admin) {
+        return administrateurRepository.save(admin);
     }
 }

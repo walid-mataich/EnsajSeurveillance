@@ -17,10 +17,23 @@ function AdminLogin() {
                 return;
             }
 
-            const response = await api.post('/authAdmin/signin', { email, password });
-            console.log('Connexion réussie:', response.data);
+            const response = await api.post('/Admin/signin', { email, password });
+            console.log('Connexion réussie');
             localStorage.setItem("jwtTokenadmin", response.data.jwt);
-            navigate('/admin');
+            try {
+                                const response = await api.get("Admin/userConnecter");
+                                if(response.data.firstEntry  )
+                                    {navigate('/admin/ModifierMp');
+                                    }else{
+                                    navigate('/admin');
+                                }
+                                    
+                              } catch (error) {
+                                console.error(
+                                  "Erreur lors de la récupération de l'utilisateur connecté",
+                                  error
+                                );
+                            }
         } catch (error) {
             console.error('Échec de la connexion:', error.response ? error.response.data : error.message);
             setError('Email ou mot de passe invalide.');

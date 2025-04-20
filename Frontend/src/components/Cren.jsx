@@ -37,7 +37,7 @@ const Cren = () => {
       try {
         const response = await api.get("surveillants/userConnecter");
         const surv=(response.data);
-        console.log(response.data);
+      
       setSurvId(surv.id);
     } catch (error) {
       console.error(

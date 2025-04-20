@@ -20,9 +20,22 @@ function SurvLogin() {
 
             // Changer l'URL pour l'authentification surveillant
             const response = await api.post('/surveillants/signin', { email, password });
-            console.log('Connexion réussie:', response.data);
+            console.log('Connexion réussie');
             localStorage.setItem("jwtTokensurv", response.data.jwt);
-            navigate('/surv'); // Redirection vers la page surveillant après connexion
+             try {
+                    const response = await api.get("surveillants/userConnecter");
+                    if(response.data.firstEntry  )
+                        {navigate('/surv/ModifierMp');
+                        }else{
+                        navigate('/surv');
+                    }
+                        
+                  } catch (error) {
+                    console.error(
+                      "Erreur lors de la récupération de l'utilisateur connecté",
+                      error
+                    );
+                }
         } catch (error) {
             console.error('Échec de la connexion:', error.response ? error.response.data : error.message);
             setError('Email ou mot de passe invalide.');
