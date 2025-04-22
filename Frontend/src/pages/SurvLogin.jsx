@@ -86,7 +86,7 @@ function SurvLogin() {
                     Se connecter
                 </button>
             </div>
-            {loading && <p>loading...</p>}
+            {loading && <LoginLoadin/>}
         </div>
     );
 }

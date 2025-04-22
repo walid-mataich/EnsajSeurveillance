@@ -137,7 +137,7 @@ const ExamSchedule = () => {
                   exams.map((exam) => (
                     <td
                       key={exam.idExamen}
-                      className="py-2 px-4 border text-red-600 font-bold"
+                      className="border-gray-900 py-2 px-4 border text-red-600 font-bold"
                     >
                       {exam.matiere.chefDeModule.nom}
                     </td>
