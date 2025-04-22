@@ -16,6 +16,9 @@ const Besoin = () => {
           try {
             const survs = await api.get("surveillants");
             const exs = await api.get("examen/all");
+            console.log(survs.data);
+            console.log(exs.data);
+
             setSurveillants(survs.data);
             setExams(exs.data);
           } catch (error) {
@@ -41,6 +44,7 @@ const Besoin = () => {
     
         const actifSurvs = surveillants.filter((surv) => surv.actif === true);
         
+        //console.log("actifSurvs:", actifSurvs.length);
         const calculNbSurv = Math.ceil(nbSalle / actifSurvs.length);
         console.log("calculNbSurv:", calculNbSurv);
     

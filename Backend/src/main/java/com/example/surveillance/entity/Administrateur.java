@@ -20,9 +20,6 @@ public class Administrateur {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "le nom de profile est obligatoire")
-    private String username;
-
     @NotBlank(message = "le nom est obligatoire")
     private String nom;
 
@@ -39,11 +36,11 @@ public class Administrateur {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
     private String role = "ADMIN";
+    private Boolean firstEntry =true;
 
 
 
-    public Administrateur(String username, Long id, String nom, String prenom, String email, String password) {
-        this.username = username;
+    public Administrateur(Long id, String nom, String prenom, String email, String password) {
         this.id = id;
         this.nom = nom;
         this.prenom = prenom;

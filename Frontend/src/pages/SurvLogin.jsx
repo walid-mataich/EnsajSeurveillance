@@ -1,15 +1,16 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import api from './../api/axios';
 
 function SurvLogin() {
-    localStorage.removeItem("jwtTokensurv");
-    localStorage.removeItem("jwtTokenadmin");
+    useEffect(()=>{localStorage.clear();},[]);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+   
 
     const handleLogin = async () => {
         try {
@@ -17,20 +18,40 @@ function SurvLogin() {
                 setError('Veuillez entrer votre email et mot de passe.');
                 return;
             }
-
+            setLoading(true);
             // Changer l'URL pour l'authentification surveillant
-            const response = await api.post('/surveillants/signin', { email, password });
-            console.log('Connexion réussie:', response.data);
-            localStorage.setItem("jwtTokensurv", response.data.jwt);
-            navigate('/surv'); // Redirection vers la page surveillant après connexion
+            const response1 = await api.post('/surveillants/signin', { email, password });
+            console.log('Connexion réussie');
+            localStorage.setItem("jwtTokensurv", response1.data.jwt);
+             try {
+                    const response = await api.get("surveillants/userConnecter");
+                    if(response.data.firstEntry  )
+                        {
+                            setLoading(false);
+                            console.log(localStorage.getItem("jwtTokensurv"));
+                            navigate('/surv/ModifierMp');
+                        }else{ 
+                            setLoading(false);
+                            console.log(localStorage.getItem("jwtTokensurv"));
+                            navigate('/surv/dashboard');
+                    }   
+                        
+                  } catch (error) {
+                    console.error(
+                      "Erreur lors de la récupération de l'utilisateur connecté",
+                      error
+                    );
+                    setLoading(false);
+                }
         } catch (error) {
             console.error('Échec de la connexion:', error.response ? error.response.data : error.message);
             setError('Email ou mot de passe invalide.');
+            setLoading(false);
         }
     };
 
     return (
-        <div className="flex justify-center items-center min-h-screen bg-gray-100">
+        <div className="flex justify-center flex-col items-center min-h-screen bg-gray-100">
             <div className="bg-white p-8 rounded-lg shadow-lg w-96">
                 {/* Titre de la page */}
                 <h2 className="text-3xl font-semibold text-center text-gray-800 mb-6">Espace Surveillant</h2>
@@ -65,6 +86,7 @@ function SurvLogin() {
                     Se connecter
                 </button>
             </div>
+            {loading && <p>loading...</p>}
         </div>
     );
 }

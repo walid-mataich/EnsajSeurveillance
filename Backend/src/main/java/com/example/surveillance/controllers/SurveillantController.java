@@ -1,12 +1,16 @@
 package com.example.surveillance.controllers;
 
+import com.example.surveillance.SecurityConfig.JwtConstant;
 import com.example.surveillance.entity.Examen;
 import com.example.surveillance.entity.Surveillant;
+import com.example.surveillance.mailing.MailService;
 import com.example.surveillance.repositories.SurveillantRepository;
 import com.example.surveillance.response.AuthResponse;
+import com.example.surveillance.response.ModifierMp;
 import com.example.surveillance.services.SurveillantService;
 import com.example.surveillance.services.SurveillantServiceImplementation;
 import com.example.surveillance.SecurityConfig.JwtProvider;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +21,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,10 +48,13 @@ public class SurveillantController {
     private SurveillantServiceImplementation customSurveillantDetails;
 
     private final SurveillantService surveillantService;
+    @Autowired
+    private  MailService mailService;
 
     // Constructor injection for SurveillantService
     public SurveillantController(SurveillantService surveillantService) {
         this.surveillantService = surveillantService;
+
     }
 
     @PostMapping("/signin")
@@ -62,9 +76,38 @@ public class SurveillantController {
 
         return new ResponseEntity<>(authResponse, HttpStatus.OK);
     }
+    @PostMapping("/modifierMotDePasse")
+    public ResponseEntity<?> changeMotDePasse(@RequestHeader("Authorization") String authHeader, @RequestBody ModifierMp motdePasse) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token manquant ou invalide !");
+        }
+
+        String token = authHeader.substring(7); // Enlève "Bearer "
+        Surveillant surveillant = customSurveillantDetails.findSurveillantProfileByJwt(token);
+
+        // Vérifie que l'ancien mot de passe est correct
+        if (!passwordEncoder.matches(motdePasse.getCurrentPassword(), surveillant.getPassword())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Ancien mot de passe incorrect.");
+        }
+
+        // Encode le nouveau mot de passe
+        String encodedNewPassword = passwordEncoder.encode(motdePasse.getNewPassword());
+
+        // Met à jour le mot de passe
+        surveillant.setPassword(encodedNewPassword);
+        surveillant.setFirstEntry(false); // désactive le flag firstEntry s'il existe
+        surveillantRepository.save(surveillant);
+        mailService.sendMail(surveillant.getEmail(),"modification de mot de passe", "votre mot de passe dans le site de surveillance est modifier avec succès ");
+
+        return ResponseEntity.ok("Mot de passe modifié avec succès !");
+    }
     @PostMapping("/add")
     public ResponseEntity<Surveillant> addServeillant(@RequestBody Surveillant surveillant) {
+        mailService.sendMail(surveillant.getEmail(),"creation de compte surveillant", "votre mot de passe dans le site de surveillance est le suivant "+surveillant.getPassword()+" Vous pouvez l'échanger lors de la première connexion. ");
+        String encodedPassword = passwordEncoder.encode(surveillant.getPassword());
+        surveillant.setPassword(encodedPassword);
         Surveillant savedSurveillant=surveillantService.createSurveillant(surveillant);
+
         return ResponseEntity.ok(savedSurveillant);
     }
 
@@ -80,12 +123,12 @@ public class SurveillantController {
             System.out.println("Sign in details - null" + surveillantDetails);
             throw new BadCredentialsException("Invalid username and password");
         } else {
-            // Compare the password entered with the encoded password from the database
-            String encodedPassword = passwordEncoder.encode(surveillantDetails.getPassword());
-            System.out.println(encodedPassword);
+//             Compare the password entered with the encoded password from the database
+//            String encodedPassword = passwordEncoder.encode(surveillantDetails.getPassword());
+//            System.out.println(encodedPassword);
             System.out.println(surveillantDetails.getPassword());
 
-            if (!passwordEncoder.matches(password, encodedPassword)) {
+            if (!passwordEncoder.matches(password,surveillantDetails.getPassword())) {
                 System.out.println("Sign in userDetails - password mismatch" + surveillantDetails);
                 throw new BadCredentialsException("Invalid password");
             }
@@ -97,6 +140,15 @@ public class SurveillantController {
     @GetMapping
     public List<Surveillant> getAllSurveillants() {
         return surveillantService.getAllSurveillants();
+    }
+    @GetMapping("/userConnecter")
+    public Surveillant userConnecter(@RequestHeader("Authorization") String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new RuntimeException("Token manquant ou invalide !");
+        }
+
+        String token = authHeader.substring(7); // Supprime "Bearer "
+        return customSurveillantDetails.findSurveillantProfileByJwt(token);
     }
 
     @PutMapping("actif/{a}/{id}")

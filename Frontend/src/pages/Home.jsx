@@ -5,8 +5,7 @@ import About from "../components/About";
 import Footer from "../components/Footer";
 
 const Home = () => {
-  localStorage.removeItem("jwtTokenadmin");
-  localStorage.removeItem("jwtTokensurv");
+  localStorage.clear();
 
   return (
     <div>

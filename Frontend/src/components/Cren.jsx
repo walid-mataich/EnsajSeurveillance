@@ -42,6 +42,23 @@ const Cren = () => {
     };
     fetchSurv();
   }, []);
+  
+  useEffect(()=>{
+    const fetchUserConnecter = async() =>{
+      try {
+        const response = await api.get("surveillants/userConnecter");
+        const surv=(response.data);
+      
+      setSurvId(surv.id);
+    } catch (error) {
+      console.error(
+        "Erreur lors de la récupération du surveillant connecter",
+        error
+      );
+    }
+  }
+  fetchUserConnecter();
+},[]);
 
   //recupere les exams pour recupere les creneaux
   useEffect(() => {
@@ -164,11 +181,11 @@ const Cren = () => {
     acc[date].push(exam);
     return acc;
   }, {});
-  6;
+  
 
   return (
     <>
-      <select
+      {/*<select
         value={survId}
         onChange={(e) => setSurvId(e.target.value)}
         required
@@ -180,7 +197,7 @@ const Cren = () => {
             {surveillant.nom}
           </option>
         ))}
-      </select>
+      </select>*/}
       <div className="container mx-auto p-4">
         <div className="mb-4 p-3 bg-gray-100 rounded-lg text-center">
           <p className="text-gray-700">

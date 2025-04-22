@@ -2,6 +2,7 @@ package com.example.surveillance.SecurityConfig;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -24,7 +25,7 @@ public class JwtProvider {
                 .setExpiration(new Date(new Date().getTime()+86400000))
                 .claim("email", auth.getName())
                 .claim( "authorities",roles)
-                .signWith(key)
+                .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
         System.out.println("Token for parsing in JwtProvider: " + jwt);
         return jwt;
@@ -42,7 +43,6 @@ public class JwtProvider {
 
     @SuppressWarnings("deprecation")
     public static String getEmailFromJwtToken(String jwt) {
-        jwt = jwt.substring(7); // Assuming "Bearer " is removed from the token
         try {
             //Claims claims=Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(jwt).getBody();
             Claims claims = Jwts.parser().setSigningKey(key).build().parseClaimsJws(jwt).getBody();

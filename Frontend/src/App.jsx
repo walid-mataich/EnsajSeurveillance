@@ -14,6 +14,7 @@ import SurvLayout from "./layouts/SurvLayout";
 import Cren from "./components/cren";
 import HomePage from "./pages/Home";
 import Log from "./pages/Log";
+import Profile from "./pages/Profile";
 
 import {
   Route,
@@ -21,7 +22,10 @@ import {
   createRoutesFromElements,
   RouterProvider,
 } from "react-router-dom";
-import { SiD } from "react-icons/si";
+import ModifierMp from "./pages/ModifierMp";
+import AdminManagement from "./pages/AdminManagement";
+
+
 // Route privée pour administrateur : redirige vers /loginadmin si pas de token
 const AdminPrivateRoute = ({ children }) => {
   const isAuthenticated = !!localStorage.getItem("jwtTokenadmin");
@@ -42,6 +46,7 @@ const router = createBrowserRouter(
       <Route path="/loginadmin" element={<AdminLogin />} />
       <Route path="/loginsurv" element={<SurvLogin />} />
 
+
       {/* Routes protégées pour administrateur */}
       <Route
         path="/admin"
@@ -56,7 +61,11 @@ const router = createBrowserRouter(
         <Route path="surveillants" element={<SurveillantsManag />} />
         <Route path="Assignation" element={<Assignation />} />
         <Route path="Notif" element={<Assignation />} />
-        <Route path="profile" element={<Assignation />} />
+        <Route path="profile" element={<Profile />} />
+        <Route path="ModifierMp" element={<ModifierMp />} />
+        <Route path="AdminManagement" element={<AdminManagement />} /> 
+
+        
       </Route>
 
       {/* Route protégée pour surveillant */}
@@ -70,10 +79,12 @@ const router = createBrowserRouter(
       >
         <Route index path="dashboard" element={<SurvDashboard />} />
         <Route path="choix" element={<Cren />} />
+        <Route path="ModifierMp" element={<ModifierMp />} />
+        <Route path="profile" element={<Profile />} />
       </Route>
-
       <Route path="/" element={<HomePage />} />
       <Route path="/log" element={<Log />} />
+
     </>
   )
 );
