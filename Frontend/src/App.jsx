@@ -84,6 +84,7 @@ const router = createBrowserRouter(
       </Route>
       <Route path="/" element={<HomePage />} />
       <Route path="/log" element={<Log />} />
+
     </>
   )
 );

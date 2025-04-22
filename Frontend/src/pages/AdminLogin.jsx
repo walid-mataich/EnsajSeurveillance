@@ -8,6 +8,7 @@ function AdminLogin() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [laoding, setLaoding] = useState(false);
     const navigate = useNavigate();
 
     const handleLogin = async () => {
@@ -16,7 +17,7 @@ function AdminLogin() {
                 setError('Veuillez entrer votre email et mot de passe.');
                 return;
             }
-
+            setLaoding(true);
             const response = await api.post('/Admin/signin', { email, password });
             console.log('Connexion réussie');
             localStorage.setItem("jwtTokenadmin", response.data.jwt);
@@ -33,15 +34,17 @@ function AdminLogin() {
                                   "Erreur lors de la récupération de l'utilisateur connecté",
                                   error
                                 );
+                                setLaoding(false);
                             }
         } catch (error) {
             console.error('Échec de la connexion:', error.response ? error.response.data : error.message);
             setError('Email ou mot de passe invalide.');
+            setLaoding(false);
         }
     };
 
     return (
-        <div className="flex justify-center items-center min-h-screen bg-gray-100">
+        <div className="flex justify-center flex-col items-center min-h-screen bg-gray-100">
             <div className="bg-white p-8 rounded-lg shadow-lg w-96">
                 {/* Titre de la page */}
                 <h2 className="text-3xl font-semibold text-center text-gray-800 mb-6">Espace Administrateur</h2>
@@ -78,6 +81,7 @@ function AdminLogin() {
     
 
             </div>
+            {laoding && <p>loading...</p>}
         </div>
     );
     
