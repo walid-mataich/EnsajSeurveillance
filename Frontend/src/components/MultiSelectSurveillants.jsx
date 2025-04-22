@@ -21,7 +21,7 @@ const MultiSelectSurveillants = (props) => {
     <div className="p-6 max-w-md mx-auto bg-white rounded-xl shadow-md space-y-4">
       <div className="mt-4">
         <h3 className="font-semibold">Surveillants sélectionnés :</h3>
-        <ul className="list-disc list-inside text-gray-600">
+        <ul className="list-disc list-inside list-none text-gray-600">
           {selectedIds.length === 0 ? (
             <li>Aucun surveillant sélectionné</li>
           ) : (

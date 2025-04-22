@@ -2,7 +2,7 @@ import Chart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 import React from "react";
 
-export default function BarChartOne() {
+export default function BarChartOne(props) {
   const options: ApexOptions = {
     colors: ["#465fff"],
     chart: {
@@ -30,7 +30,7 @@ export default function BarChartOne() {
       colors: ["transparent"],
     },
     xaxis: {
-      categories: ["Prof", "Doctorant", "Vacataire", "fonctionnaire"],
+      categories: props.types,
       axisBorder: {
         show: false,
       },
@@ -87,7 +87,7 @@ export default function BarChartOne() {
   const series = [
     {
       name: "Sales",
-      data: [168, 385, 201, 298,],
+      data: [168, 385, 201],
     },
   ];
 

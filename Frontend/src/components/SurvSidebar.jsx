@@ -43,7 +43,7 @@ const SurvSidebar = () => {
       </button>
       <aside
         ref={sidebarRef}
-        className={`fixed top-0 left-0 z-40 w-64 h-screen bg-gray-50 dark:bg-blue-800 transition-transform ${
+        className={`fixed top-0 left-0 z-40 w-64 h-screen bg-blue-800 dark:bg-blue-800 transition-transform ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         } sm:translate-x-0`}
       >

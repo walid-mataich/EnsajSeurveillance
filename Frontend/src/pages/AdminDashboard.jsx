@@ -51,7 +51,7 @@ function AdminDashboard() {
         <div className="min-w-[300px]  flex-2 h-100 bg-neutral-50 rounded-md shadow-md flex flex-col gap-6 justify-center items-center">
           <h1 className="text-2xl font-bold ">types des surveillants</h1>
 
-          <BarChartOne />
+          <BarChartOne types={["vacataire","prof","doctorant"]} />
         </div>
         <div className="min-w-[150px] max-w-[300px] flex-1 h-52 bg-neutral-50 shadow-md rounded-md flex flex-col gap-6 justify-center items-center">
           <h1 className="text-2xl font-bold text-center ">

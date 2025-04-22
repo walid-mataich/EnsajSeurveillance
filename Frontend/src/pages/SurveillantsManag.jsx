@@ -4,12 +4,10 @@ import { useEffect, useState } from "react";
 import { label, li, p } from "framer-motion/client";
 import MultiSelectSurveillants from "../components/MultiSelectSurveillants";
 import { green } from "@mui/material/colors";
+import Besoin from "../components/Besoin";
 
 const SurveillantsManag = () => {
-  const [surveillants, setSurveillants] = useState([]);
-  const [exams, setExams] = useState([]);
-  const [nbSurveillance, setNbSurveillance] = useState(0);
-  const [besoin, setBesoin] = useState(false);
+
   const [email, setEmail] = useState("");
   const [nom, setNom] = useState("");
   const [username, setUsername] = useState("");
@@ -18,54 +16,6 @@ const SurveillantsManag = () => {
   const [type, setType] = useState("");
   const [message, setMessage] = useState("");
   const [ajouter,setAjouter]=useState(false);
-
-  const [msg, setMsg] = useState(``);
-
-  useEffect(() => {
-    const fetchSurv = async () => {
-      try {
-        const survs = await api.get("surveillants");
-        const exs = await api.get("examen/all");
-        setSurveillants(survs.data);
-        setExams(exs.data);
-      } catch (error) {
-        console.error(
-          "Erreur lors de la récupération des surveillants et examens:",
-          error
-        );
-      }
-    };
-    fetchSurv();
-  }, []);
-
-  useEffect(() => {
-    const nbSalle = exams.reduce((acc, exam) => {
-      return (
-        acc +
-        exam.salles.reduce((acc, salle) => {
-          return acc + salle.nbrDeSurveillant;
-        }, 0)
-      );
-    }, 0);
-    console.log("nbSalle:", nbSalle);
-
-    const actifSurvs = surveillants.filter((surv) => surv.actif === true);
-    
-    const calculNbSurv = Math.ceil(nbSalle / actifSurvs.length);
-    console.log("calculNbSurv:", calculNbSurv);
-
-    if (calculNbSurv > parseInt(nbSurveillance) ) {
-      
-      setMsg(`le nombre de surveillants est insuffisant, ajouter des surveillants`);
-      setBesoin(true);
-         
-    }else{
-      setMsg(`le nombre de surveillants est suffisant`);
-      setBesoin(false);
-    }
-
-
-  }, [nbSurveillance]);
 
 
   const handleSubmit = async (e) => {
@@ -106,16 +56,7 @@ const SurveillantsManag = () => {
 
   return (
     <>
-      <label htmlFor="nbrDesurveillance">
-        {" "}
-        entre le nombre maximal de surveillances par surveillants
-      </label>
-      <input
-        type="text"
-        className="border-1 mx-3 rounded p-1"
-        onChange={(e) => setNbSurveillance(e.target.value)}
-      />
-      {besoin && (<><MultiSelectSurveillants surveillants={surveillants.filter((s)=> !s.actif)}/></>)}
+    <Besoin/>
     
     <div className="max-w-lg mx-auto p-6 bg-white shadow-xl rounded-xl mt-12">
       <h2 className="text-2xl font-semibold text-center text-gray-800 mb-6">
