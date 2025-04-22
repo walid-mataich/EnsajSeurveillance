@@ -12,7 +12,7 @@ import SurveillantsManag from "./pages/SurveillantsManag";
 import SurvDashboard from "./pages/SurvDashboard";
 import SurvLayout from "./layouts/SurvLayout";
 import Cren from "./components/cren";
-import HomePage from "./Pages/Home";
+import HomePage from "./pages/Home";
 import Log from "./pages/Log";
 
 import {
