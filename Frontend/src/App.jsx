@@ -24,6 +24,8 @@ import {
 } from "react-router-dom";
 import ModifierMp from "./pages/ModifierMp";
 import AdminManagement from "./pages/AdminManagement";
+import ListeAdmin from "./pages/ListeAdmin";
+import ListeSurv from "./pages/ListeSurv";
 
 
 // Route privée pour administrateur : redirige vers /loginadmin si pas de token
@@ -58,12 +60,16 @@ const router = createBrowserRouter(
       >
         <Route index path="dashboard" element={<AdminDashboard />} />
         <Route path="examens" element={<ExamenAdd />} />
-        <Route path="surveillants" element={<SurveillantsManag />} />
+        <Route path="ajoutSurv" element={<SurveillantsManag />} />
         <Route path="Assignation" element={<Assignation />} />
         <Route path="Notif" element={<Assignation />} />
         <Route path="profile" element={<Profile />} />
+        <Route path="listeAdmin" element={<ListeAdmin/>}/>
+        <Route path="listeSurv" element={<ListeSurv/>}/>
+        <Route path="ajouterAdmin" element={<AdminManagement/>}/>
         <Route path="ModifierMp" element={<ModifierMp />} />
-        <Route path="AdminManagement" element={<AdminManagement />} /> 
+        
+
 
         
       </Route>

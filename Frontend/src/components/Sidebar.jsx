@@ -64,11 +64,11 @@ const Sidebar = () => {
               <NotebookPen />
             </SidebarItem>
 
-            <SidebarItem text="Surveilants" path="/admin/Surveillants">
+            <SidebarItem text="Surveillants" path="/admin/listeSurv">
               <UserRoundPlus  />
             </SidebarItem>
 
-            <SidebarItem text="Administrateurs" path="/admin/AdminManagement">
+            <SidebarItem text="Administrateurs" path="/admin/listeAdmin">
               <UserRoundPlus  />
             </SidebarItem>
 
