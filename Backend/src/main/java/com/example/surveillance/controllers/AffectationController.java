@@ -63,5 +63,11 @@ public class AffectationController {
 
     }
 
+    @PutMapping("/modifier/{idAff}/{idNewSurv}")
+    public void modifierAffectation(@PathVariable Integer idAff, @PathVariable Long idNewSurv) {
+        affectationService.modifierAffectation(idAff,idNewSurv);
+    }
+
 
 }
+

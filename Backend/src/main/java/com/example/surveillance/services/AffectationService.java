@@ -115,4 +115,15 @@ public class AffectationService {
     public List<Affectation> getAllAffectations() {
         return affectationRepo.findAll();
     }
+
+    public void modifierAffectation(Integer idAff, Long idNewSurv){
+        Optional<Affectation> affectation = affectationRepo.findById(idAff);
+        if (affectation.isPresent()) {
+            Optional<Surveillant> newSurv = surveillantRepo.findById(idNewSurv);
+            if (newSurv.isPresent()) {
+                affectation.get().setSurveillant(newSurv.get());
+                affectationRepo.save(affectation.get());
+            }
+        }
+    }
 }
