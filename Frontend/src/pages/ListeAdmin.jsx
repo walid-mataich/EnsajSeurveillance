@@ -101,13 +101,13 @@
                 <td className="px-6 py-4 text-center">
                     <button
                     onClick={() => ouvrirFormulaireModification(admin)}
-                    className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 mr-2"
+                    className="ml-4 px-3 py-1.5 bg-blue-100 text-blue-600 rounded-md hover:bg-blue-200 transition-colors"
                     >
                     Modifier
                     </button>
                     <button
                     onClick={() => handleDelete(admin.id)}
-                    className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+                    className="ml-4 px-3 py-1.5 bg-red-100 text-red-600 rounded-md hover:bg-red-200 transition-colors"
                     >
                     Supprimer
                     </button>
@@ -182,7 +182,7 @@
             </div>
             </div>
         )}
-        <button className="w-[200px] self-center mt-[20px] bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700" onClick={handleAjoutAdmin}>ajouter Administrateur</button>
+        <button className="w-[200px] self-center mt-[20px] py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors shadow-sm" onClick={handleAjoutAdmin}>Ajouter Administrateur</button>
         </div>
     );
     };

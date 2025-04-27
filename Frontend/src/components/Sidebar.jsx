@@ -80,7 +80,7 @@ const Sidebar = () => {
               <BellRing />
             </SidebarItem>
 
-            <SidebarItem text="Profile" path="/admin/profile">
+            <SidebarItem text="Profile" path="/admin/Profile">
               <CircleUser />
             </SidebarItem>
           </ul>
