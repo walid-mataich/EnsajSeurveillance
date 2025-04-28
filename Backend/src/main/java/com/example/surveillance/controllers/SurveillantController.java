@@ -150,6 +150,45 @@ public class SurveillantController {
         String token = authHeader.substring(7); // Supprime "Bearer "
         return customSurveillantDetails.findSurveillantProfileByJwt(token);
     }
+    @PutMapping("/modifier/{id}")
+    public ResponseEntity<Surveillant> modifierSurveillant(@PathVariable("id") Long id, @RequestBody Surveillant surveillantModifie) {
+        Optional<Surveillant> optionalSurveillant = surveillantRepository.findById(id);
+        if (optionalSurveillant.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        Surveillant surveillantExist = optionalSurveillant.get();
+        surveillantExist.setNom(surveillantModifie.getNom());
+        surveillantExist.setPrenom(surveillantModifie.getPrenom());
+        surveillantExist.setEmail(surveillantModifie.getEmail());
+        surveillantExist.setType(surveillantModifie.getType());
+        if (surveillantModifie.getPassword() != null && !surveillantModifie.getPassword().isEmpty()) {
+            String encodedPassword = passwordEncoder.encode(surveillantModifie.getPassword());
+            surveillantExist.setPassword(encodedPassword);
+        }
+        Surveillant surveillantSauvegarde = surveillantRepository.save(surveillantExist);
+        mailService.sendMail(
+                surveillantSauvegarde.getEmail(),
+                "Mise à jour de votre profil",
+                "Vos informations ont été mises à jour avec succès par un administrateur dans le site de surveillance."
+        );
+
+        return ResponseEntity.ok(surveillantSauvegarde);
+    }
+    @DeleteMapping("/supprimer/{id}")
+    public ResponseEntity<String> supprimerSurveillant(@PathVariable("id") Long id) {
+        Surveillant surveillantExist = surveillantRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Surveillant introuvable"));
+        surveillantRepository.delete(surveillantExist);
+        mailService.sendMail(
+                surveillantExist.getEmail(),
+                "Suppression du compte",
+                "Votre compte de surveillant a été supprimé avec succès par un administrateur dans le site de surveillance."
+        );
+
+        return ResponseEntity.ok("Surveillant supprimé avec succès !");
+    }
+
+
 
     @PutMapping("actif/{a}/{id}")
     public void actif(@PathVariable boolean a, @PathVariable Long id) {

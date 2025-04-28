@@ -19,6 +19,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/Admin")
 public class AdministrateurController {
@@ -102,6 +104,33 @@ public class AdministrateurController {
 
         return new UsernamePasswordAuthenticationToken(adminDetails, null, adminDetails.getAuthorities());
     }
+    @PutMapping("/modifier/{id}")
+    public ResponseEntity<Administrateur> modifierAdministrateur(@PathVariable("id") Long id, @RequestBody Administrateur adminModifie) {
+        Administrateur adminExist = administrateurRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Administrateur introuvable"));
+        adminExist.setNom(adminModifie.getNom());
+        adminExist.setPrenom(adminModifie.getPrenom());
+        adminExist.setEmail(adminModifie.getEmail());
+        if (adminModifie.getPassword() != null && !adminModifie.getPassword().isEmpty()) {
+            String encodedPassword = passwordEncoder.encode(adminModifie.getPassword());
+            adminExist.setPassword(encodedPassword);
+        }
+        Administrateur adminSauvegarde = administrateurRepository.save(adminExist);
+        mailService.sendMail(adminSauvegarde.getEmail(), "Modification des informations",
+                "Vos informations ont été mises à jour avec succès par un administrateur dans  le site de surveillance.");
+        return ResponseEntity.ok(adminSauvegarde);
+    }
+    @DeleteMapping("/supprimer/{id}")
+    public ResponseEntity<String> supprimerAdministrateur(@PathVariable("id") Long id) {
+        Administrateur adminExist = administrateurRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Administrateur introuvable"));
+        administrateurRepository.delete(adminExist);
+        mailService.sendMail(adminExist.getEmail(), "Suppression du compte",
+                "Votre compte administrateur a été supprimé avec succès par un administrateur dans le site de surveillance.");
+        return ResponseEntity.ok("Administrateur supprimé avec succès !");
+    }
+
+
     @PostMapping("/add")
     public ResponseEntity<Administrateur> addAdministrateur(@RequestBody Administrateur admin) {
         mailService.sendMail(admin.getEmail(),"creation de compte administrateur", "votre mot de passe dans le site de surveillance est le suivant "+admin.getPassword()+" Vous pouvez le changer lors de la première connexion. ");
@@ -118,5 +147,9 @@ public class AdministrateurController {
 
         String token = authHeader.substring(7); // Supprime "Bearer "
         return customAdminDetails.findAdministrateurProfileByJwt(token);
+    }
+    @GetMapping("/all")
+    public List<Administrateur> getAllAdministrateurs() {
+        return customAdminDetails.findAllAdministrateurs();
     }
 }

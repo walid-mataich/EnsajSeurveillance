@@ -14,7 +14,7 @@ import SurvLayout from "./layouts/SurvLayout";
 import Cren from "./components/cren";
 import HomePage from "./pages/Home";
 import Log from "./pages/Log";
-import Profile from "./pages/Profile";
+
 
 import {
   Route,
@@ -25,6 +25,12 @@ import {
 import ModifierMp from "./pages/ModifierMp";
 import AdminManagement from "./pages/AdminManagement";
 import Emploi from "./pages/Emploi";
+import ListeAdmin from "./pages/ListeAdmin";
+import ListeSurv from "./pages/ListeSurv";
+import Profile from "./pages/Profile";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
+import Notification from "./pages/Notification";
 
 
 // Route privée pour administrateur : redirige vers /loginadmin si pas de token
@@ -59,12 +65,16 @@ const router = createBrowserRouter(
       >
         <Route index path="dashboard" element={<AdminDashboard />} />
         <Route path="examens" element={<ExamenAdd />} />
-        <Route path="surveillants" element={<SurveillantsManag />} />
+        <Route path="ajoutSurv" element={<SurveillantsManag />} />
         <Route path="Assignation" element={<Assignation />} />
-        <Route path="Notif" element={<Assignation />} />
-        <Route path="profile" element={<Profile />} />
+        <Route path="Notif" element={<Notification />} />
+        <Route path="Profile" element={<Profile/>} /> 
+        <Route path="listeAdmin" element={<ListeAdmin/>}/>
+        <Route path="listeSurv" element={<ListeSurv/>}/>
+        <Route path="ajouterAdmin" element={<AdminManagement/>}/>
         <Route path="ModifierMp" element={<ModifierMp />} />
-        <Route path="AdminManagement" element={<AdminManagement />} /> 
+        
+
 
         
       </Route>
@@ -86,10 +96,13 @@ const router = createBrowserRouter(
       </Route>
       <Route path="/" element={<HomePage />} />
       <Route path="/log" element={<Log />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/contact" element={<Contact />} />
 
     </>
   )
 );
+
 
 function App() {
   return <RouterProvider router={router} />;
