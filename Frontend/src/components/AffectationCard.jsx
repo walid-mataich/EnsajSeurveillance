@@ -20,7 +20,7 @@ const AffectationCard = ({ affectation }) => {
 
       <div className="flex items-center gap-2 text-gray-700 mb-2">
         <BookOpen className="w-5 h-5 text-indigo-500" />
-        <span>{matiere.nomMatiere} (Niv {matiere.niveau})</span>
+        <span>{matiere.nomMatiere} (2AP-{matiere.niveau})</span>
       </div>
 
       <div className="flex items-center gap-2 text-gray-700 mb-2">

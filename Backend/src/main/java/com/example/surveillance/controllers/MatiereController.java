@@ -3,10 +3,7 @@ package com.example.surveillance.controllers;
 
 import com.example.surveillance.entity.Matiere;
 import com.example.surveillance.services.MatiereService;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -25,5 +22,10 @@ public class MatiereController {
     @GetMapping
     public List<Matiere> getAllMatieres() {
         return matiereService.getAllMatieres();
+    }
+
+    @PostMapping("/add/{nomMatiere}/{niveau}/{id}")
+    public void addMatiere(@PathVariable String nomMatiere, @PathVariable int niveau, @PathVariable Long id) {
+        matiereService.AddMatiere(nomMatiere, niveau, id);
     }
 }

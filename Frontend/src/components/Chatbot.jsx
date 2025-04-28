@@ -8,7 +8,20 @@ const ChatBot = () => {
   const [messages, setMessages] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [survId, setSurvId] = useState("");
   const chatEndRef = useRef(null);
+
+  useEffect(() => {
+    const fetchUserConnecter = async () => {
+      try {
+        const response = await api.get("surveillants/userConnecter");
+        setSurvId(response.data.nom);
+      } catch (error) {
+        console.error("Erreur récupération du surveillant connecté:", error);
+      }
+    };
+    fetchUserConnecter();
+  }, []);
 
   const sendMessage = async () => {
     if (!input.trim()) return;
@@ -21,7 +34,7 @@ const ChatBot = () => {
     try {
       const res = await api.post(
         "/chat",
-        { prompt: input },
+        { prompt: `i am ${survId}` + input },
         { headers: { "Content-Type": "application/json" } }
       );
 

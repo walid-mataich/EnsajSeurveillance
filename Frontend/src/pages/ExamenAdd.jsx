@@ -1,6 +1,6 @@
 import React from "react";
 import CountUp from "../components/Count";
-import Matieres from "../components/Matiere";
+import AddMatieres from "../components/AddMatieres";
 import Sidebar from "../components/Sidebar";
 import ExamenForm from "../components/ExamenForm";
 import Planning from "../components/Planning";
@@ -24,6 +24,14 @@ function ExamenAdd() {
       <div className="flex-1 flex items-center justify-center p-6">
         <SalleForm />
       </div>
+
+
+      <div className="flex-1 flex items-center justify-center p-6">
+        <AddMatieres />
+      </div>
+
+      
+      
 
       {/* <div class="p-4 sm:ml-64">
         <div>

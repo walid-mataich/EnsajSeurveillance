@@ -1,11 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import api from "../api/axios";
-import { use } from "framer-motion/client";
-import { color } from "framer-motion";
 import ChoixBySurv from "./ChoixBySurv";
 
-//ta ytzad f espace surveillant
-//composent pour le choix des crenaux pour les surveillants
 const Cren = () => {
   const [exams, setExams] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -13,61 +9,58 @@ const Cren = () => {
   const [buttonColors, setButtonColors] = useState({});
   const [selectedExam, setSelectedExam] = useState(null);
   const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
-  const [surveillants, setSurveillants] = useState([]);
   const [survId, setSurvId] = useState("");
   const [choix, setChoix] = useState([]);
+  const popupRef = useRef();
 
   useEffect(() => {
-    try {
-      api.get(`/choix/${survId}`).then((res) => {
-        setChoix(res.data);
-      });
-    } catch (e) {
-      console.log(e);
+    const handleClickOutside = (event) => {
+      if (popupRef.current && !popupRef.current.contains(event.target)) {
+        setSelectedExam(null); // ferme le popup si clique dehors
+      }
+    };
+
+    if (selectedExam) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [selectedExam]);
+
+  useEffect(() => {
+    const fetchUserConnecter = async () => {
+      try {
+        const response = await api.get("surveillants/userConnecter");
+        setSurvId(response.data.id);
+      } catch (error) {
+        console.error("Erreur récupération du surveillant connecté:", error);
+      }
+    };
+    fetchUserConnecter();
+  }, []);
+
+  useEffect(() => {
+    if (survId) {
+      api
+        .get(`/choix/${survId}`)
+        .then((res) => {
+          setChoix(res.data);
+        })
+        .catch((err) => console.log(err));
     }
   }, [survId]);
 
-  // hadi ra gha bach njrbo 7it mazal ma drna auth
-  useEffect(() => {
-    const fetchSurv = async () => {
-      try {
-        const response = await api.get("surveillants");
-        setSurveillants(response.data);
-      } catch (error) {
-        console.error(
-          "Erreur lors de la récupération des surveillants:",
-          error
-        );
-      }
-    };
-    fetchSurv();
-  }, []);
-  
-  useEffect(()=>{
-    const fetchUserConnecter = async() =>{
-      try {
-        const response = await api.get("surveillants/userConnecter");
-        const surv=(response.data);
-      
-      setSurvId(surv.id);
-    } catch (error) {
-      console.error(
-        "Erreur lors de la récupération du surveillant connecter",
-        error
-      );
-    }
-  }
-  fetchUserConnecter();
-},[]);
-
-  //recupere les exams pour recupere les creneaux
   useEffect(() => {
     const fetchExams = async () => {
       try {
         const response = await api.get("/examen/all");
         setExams(response.data);
       } catch (err) {
-        setError("Échec du chargement des données");
+        setError("Échec du chargement des examens");
       } finally {
         setLoading(false);
       }
@@ -76,89 +69,58 @@ const Cren = () => {
   }, []);
 
   const getExamsByChefModule = (exams, chefId) => {
-    return exams.filter((exam) => exam.matiere.chefDeModule.id == chefId);
+    return exams.filter((exam) => exam.matiere.chefDeModule.id === chefId);
   };
 
-  //fonction pour enregistrer les choix dans la base de donnees
   const handleSubmit = async () => {
     const updatedColors = { ...buttonColors };
-
     const examsChef = getExamsByChefModule(exams, survId);
-    if (examsChef.length !== 0) {
-      for (const exam of examsChef) {
-        updatedColors[exam.idExamen] = "bg-red-500";
-      }
-    }
 
-    console.log("Exams for the selected chef:", examsChef);
-
-    // if (examsChef.length != 0) {
-    //   const updatedColors = { ...buttonColors };
-    //   for (const exam of examsChef) {
-    //     updatedColors[exam.idExamen] = "bg-red-500";
-    //   }
-    //   setButtonColors(updatedColors);
-    // }
-
-    // console.table(buttonColors);
+    examsChef.forEach((exam) => {
+      updatedColors[exam.idExamen] = "bg-red-500";
+    });
 
     const nonChoisisExamsIds = exams
       .map((exam) => exam.idExamen)
       .filter((id) => !(id in updatedColors));
 
-    console.log("Liste des ID des examens:", nonChoisisExamsIds);
-
     const tempChoices = Object.entries(updatedColors).map(([key, color]) => ({
       idExamen: key,
       ordre:
-        updatedColors[key] == "bg-red-500"
+        color === "bg-red-500"
           ? -1
-          : updatedColors[key] == "bg-yellow-300"
+          : color === "bg-yellow-300"
           ? 0
-          : updatedColors[key] == "bg-green-500"
+          : color === "bg-green-500"
           ? 1
           : 0,
     }));
-
-    console.log("tempChoices:", tempChoices);
 
     if (nonChoisisExamsIds.length > 0) {
       const confirm = window.confirm(
         `Vous n'avez pas choisi de préférence pour ${nonChoisisExamsIds.length} examen(s). Voulez-vous continuer ?`
       );
       if (!confirm) return;
-      else {
-        for (const id of nonChoisisExamsIds) {
-          tempChoices.push({
-            idExamen: id,
-            ordre: 0,
-          });
-        }
-      }
+
+      nonChoisisExamsIds.forEach((id) => {
+        tempChoices.push({ idExamen: id, ordre: 0 });
+      });
     }
 
     for (const choice of tempChoices) {
       try {
         await api.post(
           `choix/choisir?id=${survId}&idExamen=${choice.idExamen}`,
-          {
-            ordre: choice.ordre,
-          },
-          {
-            headers: { "Content-Type": "application/json" },
-          }
+          { ordre: choice.ordre },
+          { headers: { "Content-Type": "application/json" } }
         );
       } catch (error) {
-        console.error("Erreur lors de l'envoi des données", error);
+        console.error("Erreur lors de l'envoi des choix:", error);
       }
     }
 
-    alert("Choix soumis avec succès!");
+    alert("Choix soumis avec succès !");
   };
-
-  if (loading)
-    return <p className="text-center text-gray-600">Chargement...</p>;
-  if (error) return <p className="text-center text-red-500">{error}</p>;
 
   const handleOpenColorPicker = (idExamen, event) => {
     setSelectedExam(idExamen);
@@ -171,7 +133,6 @@ const Cren = () => {
 
   const handleColorSelect = (color) => {
     setButtonColors((prevColors) => ({ ...prevColors, [selectedExam]: color }));
-    console.table(buttonColors);
     setSelectedExam(null);
   };
 
@@ -181,111 +142,109 @@ const Cren = () => {
     acc[date].push(exam);
     return acc;
   }, {});
-  
+
+  if (loading)
+    return <p className="text-center text-gray-600">Chargement...</p>;
+  if (error) return <p className="text-center text-red-500">{error}</p>;
 
   return (
-    <>
-      {/*<select
-        value={survId}
-        onChange={(e) => setSurvId(e.target.value)}
-        required
-        className="mt-2 block w-full p-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
-      >
-        <option value="">Sélectionner un surveillant</option>
-        {surveillants.map((surveillant) => (
-          <option key={surveillant.id} value={surveillant.id}>
-            {surveillant.nom}
-          </option>
-        ))}
-      </select>*/}
-      <div className="container mx-auto p-4">
-        <div className="mb-4 p-3 bg-gray-100 rounded-lg text-center">
-          <p className="text-gray-700">
-            Veuillez choisir les couleurs selon vos préférences :
-          </p>
-          <p className="text-red-500 font-semibold">
-            🔴 Rouge : Vous êtes occupé
-          </p>
-          <p className="text-yellow-500 font-semibold">
-            🟡 Jaune : Vous êtes disponible
-          </p>
-          <p className="text-green-500 font-semibold">
-            🟢 Vert : C'est favorable
-          </p>
-        </div>
-
-        <div>
-          {Object.entries(groupedExams).map(([day, exams]) => (
-            <div key={day} className="bg-white shadow-md rounded-lg mb-4 p-4">
-              <h2 className="text-lg font-semibold text-gray-800 mb-2">
-                {new Date(day).toLocaleDateString("fr-FR", {
-                  weekday: "long",
-                })}{" "}
-                - {day}
-              </h2>
-              <div className="grid grid-cols-2 gap-2">
-                {exams.map((exam) => (
-                  <button
-                    key={exam.idExamen}
-                    className={`py-2 px-4 rounded-lg shadow-md transition duration-200 text-black border border-gray-400 cursor-cell  ${
-                      exam.matiere.chefDeModule.id == survId
-                        ? " cursor-not-allowed bg-red-500"
-                        : buttonColors[exam.idExamen] || "bg-white"
-                    }`}
-                    onClick={(event) => {
-                      exam.matiere.chefDeModule.id != survId &&
-                        handleOpenColorPicker(exam.idExamen, event);
-                    }}
-                  >
-                    {exam.debut} - {exam.fin}
-                  </button>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {selectedExam && (
-          <div
-            className="absolute p-4 bg-white shadow-lg rounded-lg border border-gray-300"
-            style={{ top: popupPosition.top + 30, left: popupPosition.left }}
-          >
-            <h3 className="text-lg font-semibold mb-2">
-              Choisissez une couleur
-            </h3>
-            <div className="flex gap-4">
-              <button
-                className="bg-red-500 text-white py-2 px-4 rounded-lg cursor-pointer"
-                onClick={() => handleColorSelect("bg-red-500")}
-              >
-                Rouge
-              </button>
-              <button
-                className="bg-green-500 text-white py-2 px-4 rounded-lg cursor-pointer"
-                onClick={() => handleColorSelect("bg-green-500")}
-              >
-                Vert
-              </button>
-              <button
-                className="bg-yellow-300 text-white py-2 px-4 rounded-lg cursor-pointer"
-                onClick={() => handleColorSelect("bg-yellow-300")}
-              >
-                Jaune
-              </button>
-            </div>
-          </div>
-        )}
-
-        <div className="text-center mt-6">
-          <button
-            className="bg-blue-500 text-white py-2 px-6 rounded-lg shadow-md hover:bg-blue-600 transition"
-            onClick={handleSubmit}
-          >
-            Soumettre
-          </button>
+    <div className="container mx-auto p-6">
+      <div className="mb-8 bg-gradient-to-r from-blue-100 to-blue-200 p-6 rounded-lg text-center shadow-md">
+        <h1 className="text-2xl font-bold text-gray-800 mb-2">
+          Vos Disponibilités
+        </h1>
+        <p className="text-gray-700 mb-1">
+          Sélectionnez vos préférences de créneaux :
+        </p>
+        <div className="flex justify-center gap-4 mt-4">
+          <span className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-red-500 rounded-full"></div> Occupé
+          </span>
+          <span className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-yellow-300 rounded-full"></div>{" "}
+            Disponible
+          </span>
+          <span className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-green-500 rounded-full"></div> Favorable
+          </span>
         </div>
       </div>
-    </>
+
+      <div className="space-y-8">
+        {Object.entries(groupedExams).map(([day, exams]) => (
+          <div key={day} className="bg-white rounded-xl shadow-md p-6">
+            <h2 className="text-xl font-semibold text-gray-700 mb-4">
+              {new Date(day).toLocaleDateString("fr-FR", { weekday: "long" })} -{" "}
+              {day}
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {exams.map((exam) => (
+                <button
+                  key={exam.idExamen}
+                  className={`flex flex-col items-center justify-center py-3 px-6 rounded-lg border-2 transition transform hover:scale-105 ${
+                    exam.matiere.chefDeModule.id === survId
+                      ? "bg-red-500 cursor-not-allowed text-white"
+                      : buttonColors[exam.idExamen] || "bg-gray-100"
+                  }`}
+                  onClick={(event) => {
+                    exam.matiere.chefDeModule.id !== survId &&
+                      handleOpenColorPicker(exam.idExamen, event);
+                  }}
+                >
+                  <div className="text-lg font-medium">
+                    {exam.debut} - {exam.fin}
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    {exam.matiere.nom}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {selectedExam && (
+        <div
+          ref={popupRef}
+          className="absolute p-5 bg-white shadow-lg rounded-lg border border-gray-300 z-50"
+          style={{ top: popupPosition.top + 30, left: popupPosition.left }}
+        >
+          <h3 className="text-lg font-bold mb-4 text-gray-700">
+            Choisissez une couleur
+          </h3>
+          <div className="flex gap-4">
+            <button
+              className="bg-red-500 text-white py-2 px-4 rounded-full hover:opacity-90"
+              onClick={() => handleColorSelect("bg-red-500")}
+            >
+              Occupé
+            </button>
+            <button
+              className="bg-green-500 text-white py-2 px-4 rounded-full hover:opacity-90"
+              onClick={() => handleColorSelect("bg-green-500")}
+            >
+              Favorable
+            </button>
+            <button
+              className="bg-yellow-300 text-black py-2 px-4 rounded-full hover:opacity-90"
+              onClick={() => handleColorSelect("bg-yellow-300")}
+            >
+              Disponible
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div className="text-center mt-10">
+        <button
+          className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transition transform hover:scale-105"
+          onClick={handleSubmit}
+        >
+          Valider mes Choix
+        </button>
+      </div>
+    </div>
   );
 };
 

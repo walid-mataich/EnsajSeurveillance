@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import api from './../api/axios';
+import LoginLoadin from '../components/LoginLoadin';
 
 function SurvLogin() {
     useEffect(()=>{localStorage.clear();},[]);
