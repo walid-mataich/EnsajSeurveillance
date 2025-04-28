@@ -73,7 +73,7 @@ const SurvSidebar = () => {
               <BellRing />
             </SidebarItem>
 
-            <SidebarItem text="Profile" path="/Surv/profile">
+            <SidebarItem text="Profile" path="/Surv/Profile">
               <CircleUser />
             </SidebarItem>
           </ul>
