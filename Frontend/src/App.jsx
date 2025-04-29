@@ -1,5 +1,5 @@
-import React from "react";
-import { Navigate } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { Navigate,useNavigate } from "react-router-dom";
 
 import "./App.css";
 import AdminDashboard from "./pages/AdminDashboard";
@@ -14,6 +14,8 @@ import SurvLayout from "./layouts/SurvLayout";
 import Cren from "./components/cren";
 import HomePage from "./pages/Home";
 import Log from "./pages/Log";
+import api from "./api/axios";
+import LoadingPulse from './components/LoadingPulse';
 
 
 import {
@@ -30,19 +32,71 @@ import ListeSurv from "./pages/ListeSurv";
 import Profile from "./pages/Profile";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
-import Notification from "./pages/Notification";
+import Notification from "./pages/Notification";  
 
 
 // Route privée pour administrateur : redirige vers /loginadmin si pas de token
 const AdminPrivateRoute = ({ children }) => {
-  const isAuthenticated = !!localStorage.getItem("jwtTokenadmin");
-  return isAuthenticated ? children : <Navigate to="/loginadmin" replace />;
+  const [isValid, setIsValid] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const verifyToken = async () => {
+      const token = localStorage.getItem("jwtTokenadmin");
+      
+      if (!token) {
+        setIsValid(false);
+        return;
+      }
+
+      try {
+        const response = await api.get('/Admin/validToken');
+        console.log('Validation token OK', response.data);
+        setIsValid(true);
+      } catch (error) {
+        console.error('Token invalide ou erreur API:', error);
+        localStorage.removeItem("jwtTokenadmin");
+        setIsValid(false);
+      }
+    };
+
+    verifyToken();
+  }, []);
+
+  if (isValid === null) return <div><LoadingPulse/></div>;
+  return isValid ? children : <Navigate to="/loginadmin" replace />;
 };
 
 // Route privée pour surveillant : redirige vers /loginsurv si pas de token
 const SurvPrivateRoute = ({ children }) => {
-  const isAuthenticated = !!localStorage.getItem("jwtTokensurv");
-  return isAuthenticated ? children : <Navigate to="/loginsurv" replace />;
+  const [isValid, setIsValid] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const verifyToken = async () => {
+      const token = localStorage.getItem("jwtTokensurv");
+
+      if (!token) {
+        setIsValid(false);
+        return;
+      }
+
+      try {
+        const response = await api.get('/surveillants/validToken');
+        console.log('Validation token surveillant OK', response.data);
+        setIsValid(true);
+      } catch (error) {
+        console.error('Token surveillant invalide ou erreur API:', error);
+        localStorage.removeItem("jwtTokensurv");
+        setIsValid(false);
+      }
+    };
+
+    verifyToken();
+  }, []);
+
+  if (isValid === null) return <div><LoadingPulse /></div>;
+  return isValid ? children : <Navigate to="/loginsurv" replace />;
 };
 //test
 

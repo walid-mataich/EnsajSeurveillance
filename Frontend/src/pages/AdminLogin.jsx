@@ -2,8 +2,6 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import api from './../api/axios';
-import LoadingPulse from '../components/LoadingPulse';
-import LoginLoadin from '../components/LoginLoadin';
 
 function AdminLogin() {
     useEffect(()=>{
@@ -85,7 +83,7 @@ function AdminLogin() {
     
 
             </div>
-            {laoding && <LoginLoadin/>}
+            {laoding && <p>loading...</p>}
         </div>
     );
     

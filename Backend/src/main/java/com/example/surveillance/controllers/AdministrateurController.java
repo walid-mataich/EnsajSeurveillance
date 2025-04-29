@@ -1,6 +1,6 @@
 package com.example.surveillance.controllers;
 
-import com.example.surveillance.entity.Surveillant;
+import com.example.surveillance.SecurityConfig.JwtConstant;
 import com.example.surveillance.mailing.MailService;
 import com.example.surveillance.repositories.AdministrateurRepository;
 import com.example.surveillance.response.AuthResponse;
@@ -8,6 +8,10 @@ import com.example.surveillance.response.ModifierMp;
 import com.example.surveillance.services.AdministrateurServiceImplementation;
 import com.example.surveillance.SecurityConfig.JwtProvider;
 import com.example.surveillance.entity.Administrateur;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.Jwts;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +23,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.crypto.SecretKey;
 import java.util.List;
 
 @RestController
@@ -147,6 +152,23 @@ public class AdministrateurController {
 
         String token = authHeader.substring(7); // Supprime "Bearer "
         return customAdminDetails.findAdministrateurProfileByJwt(token);
+    }
+    @GetMapping("/validToken")
+    public ResponseEntity<String> validateToken(HttpServletRequest request) {
+        String jwt = request.getHeader("Authorization");
+
+        if (jwt != null && jwt.startsWith("Bearer ")) {
+            jwt = jwt.substring(7);
+            try {
+                SecretKey key = Keys.hmacShaKeyFor(JwtConstant.SECRET_KEY.getBytes());
+                Jwts.parser().setSigningKey(key).build().parseClaimsJws(jwt);
+                return ResponseEntity.ok("Token valide");
+            } catch (JwtException e) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token invalide");
+            }
+        }
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token manquant ou mal formaté");
     }
     @GetMapping("/all")
     public List<Administrateur> getAllAdministrateurs() {
