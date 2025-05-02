@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { User, Mail, LogOut } from 'lucide-react';
+import { KeyRound ,User, Mail, LogOut } from 'lucide-react';
 import api from "../api/axios";
 
 function Profile() {
@@ -49,27 +49,30 @@ function Profile() {
   return (
     <div className="dashboard-container px-4 py-6 sm:px-6 lg:px-8">
     <div className="profile-container bg-white rounded-lg shadow-md p-6 max-w-4xl mx-auto">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-        <h2 className="text-2xl font-semibold flex items-center gap-2">
-          <User size={24} className="text-blue-500" />
-          Profile
-        </h2>
-        <div className="flex flex-col gap-2 sm:gap-3 w-full md:w-auto">
-          <button
-            onClick={handleModifier}
-            className="flex justify-center items-center w-[175px] ml-auto text-sm px-2 py-1 form-submit-btn bg-blue-500 text-white sm:px-4 sm:py-2 rounded-md"
-          >
-            Modifier mot de passe
-          </button>
-          <button
-            onClick={handleLogout}
-            className="flex justify-center items-center w-[175px] ml-auto text-sm px-2 py-1 logout-btn bg-red-500 text-white sm:px-4 sm:py-2 rounded-md gap-2"
-          >
-            <LogOut size={18} />
-            Déconnexion
-          </button>
-        </div>
-      </div>
+    <div className="flex flex-row justify-between items-start md:items-center gap-4 mb-6">
+  <h2 className="text-2xl font-semibold flex items-center gap-2">
+    <User size={24} className="text-blue-500" />
+    Profile
+  </h2>
+
+  <div className="flex flex-row gap-2 w-auto items-end">
+    <button
+      onClick={handleModifier}
+      className="flex items-center justify-center w-10 md:w-[175px] h-[45px] text-sm px-2 py-2 form-submit-btn bg-blue-500 text-white rounded-md gap-2"
+    >
+       <KeyRound size={18} />
+      <span className="hidden md:inline">Modifier mot de passe</span>
+    </button>
+
+    <button
+      onClick={handleLogout}
+      className="flex items-center justify-center w-10 md:w-[175px] h-[45px] text-sm px-2 py-2 logout-btn bg-red-500 text-white rounded-md gap-2"
+    >
+      <LogOut size={18} />
+      <span className="hidden md:inline">Déconnexion</span>
+    </button>
+  </div>
+</div>
   
       {/* Avatar */}
       <div className="profile-avatar flex flex-col items-center mb-6 text-center">

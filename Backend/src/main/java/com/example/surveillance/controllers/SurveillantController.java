@@ -145,6 +145,24 @@ public class SurveillantController {
     public List<Surveillant> getAllSurveillants() {
         return surveillantService.getAllSurveillants();
     }
+    @GetMapping("/count/Professeur")
+    public ResponseEntity<Long> getCountProfesseur() {
+        long count = surveillantRepository.countByTypeProfesseur();
+        return ResponseEntity.ok(count);
+    }
+
+    @GetMapping("/count/Vacataire")
+    public ResponseEntity<Long> getCountVacataire() {
+        long count = surveillantRepository.countByTypeVacataire();
+        return ResponseEntity.ok(count);
+    }
+
+    @GetMapping("/count/Doctorant")
+    public ResponseEntity<Long> getCountDoctorant() {
+        long count = surveillantRepository.countByTypeDoctorant();
+        return ResponseEntity.ok(count);
+    }
+
     @GetMapping("/validToken")
     public ResponseEntity<String> validateToken(HttpServletRequest request) {
         String jwt = request.getHeader("Authorization");

@@ -1,101 +1,55 @@
-import Chart from "react-apexcharts";
-import { ApexOptions } from "apexcharts";
+import { useEffect, useState } from "react";
 import React from "react";
+import { ChartContainer } from '@mui/x-charts/ChartContainer';
+import { BarPlot } from '@mui/x-charts/BarChart';
+import { ChartsXAxis } from '@mui/x-charts/ChartsXAxis';
+import { ChartsYAxis } from '@mui/x-charts/ChartsYAxis';
+import { ChartsTooltip } from '@mui/x-charts/ChartsTooltip';
+import api from '../api/axios';
 
-export default function BarChartOne(props) {
-  const options: ApexOptions = {
-    colors: ["#465fff"],
-    chart: {
-      fontFamily: "Outfit, sans-serif",
-      type: "bar",
-      height: 180,
-      toolbar: {
-        show: false,
-      },
-    },
-    plotOptions: {
-      bar: {
-        horizontal: false,
-        columnWidth: "39%",
-        borderRadius: 5,
-        borderRadiusApplication: "end",
-      },
-    },
-    dataLabels: {
-      enabled: false,
-    },
-    stroke: {
-      show: true,
-      width: 4,
-      colors: ["transparent"],
-    },
-    xaxis: {
-      categories: props.types,
-      axisBorder: {
-        show: false,
-      },
-      axisTicks: {
-        show: false,
-      },
-    },
-    legend: {
-      show: true,
-      position: "top",
-      horizontalAlign: "left",
-      fontFamily: "Outfit",
-    },
-    yaxis: {
-      title: {
-        text: undefined,
-      },
-    },
-    grid: {
-      yaxis: {
-        lines: {
-          show: true,
-        },
-      },
-    },
-    fill: {
-      opacity: 1,
-    },
-    tooltip: {
-      x: {
-        show: false,
-      },
-      y: {
-        formatter: (val: number) => `${val}`,
-      },
-    },
-    responsive: [
-      {
-        breakpoint: 768,
-        options: {
-          chart: {
-            height: 150,
-          },
-          plotOptions: {
-            bar: {
-              columnWidth: "50%",
-            },
-          },
-        },
-      },
-    ],
-  };
+export default function LabelsAboveBars() {
+  // États pour stocker les données récupérées
+  const [professeurCount, setProfesseurCount] = useState(0);
+  const [vacataireCount, setVacataireCount] = useState(0);
+  const [doctorantCount, setDoctorantCount] = useState(0);
 
-  const series = [
-    {
-      name: "Sales",
-      data: [168, 385, 201],
-    },
-  ];
+  useEffect(() => {
+
+    api.get('/surveillants/count/Professeur')
+      .then(response => setProfesseurCount(response.data))
+      .catch(error => console.error("Erreur lors du chargement des données pour Professeur", error));
+
+    api.get('/surveillants/count/Vacataire')
+      .then(response => setVacataireCount(response.data))
+      .catch(error => console.error("Erreur lors du chargement des données pour Vacataire", error));
+
+    api.get('/surveillants/count/Doctorant')
+      .then(response => setDoctorantCount(response.data))
+      .catch(error => console.error("Erreur lors du chargement des données pour Doctorant", error));
+  }, []);
+
+  // Les catégories et les valeurs qui seront affichées dans le graphique
+  const categories = ['Professeur', 'Vacataire', 'Doctorant'];
+  const values = [professeurCount, vacataireCount, doctorantCount];
 
   return (
-    <div className="w-full max-w-full overflow-x-auto custom-scrollbar">
-      <div id="chartOne" className="w-full">
-        <Chart options={options} series={series} type="bar" height={180} />
-      </div>
-    </div>
+    <ChartContainer
+      xAxis={[{ scaleType: 'band', data: categories }]}
+      series={[
+        {
+          type: 'bar',
+          id: 'base',
+          data: values,
+          color: '#1d4ed8',
+        },
+      ]}
+      width={400}
+      height={300}
+    >
+      <BarPlot />
+      <ChartsXAxis />
+      <ChartsYAxis />
+      <ChartsTooltip />
+    </ChartContainer>
   );
 }
