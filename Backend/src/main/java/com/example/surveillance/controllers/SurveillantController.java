@@ -10,6 +10,9 @@ import com.example.surveillance.response.ModifierMp;
 import com.example.surveillance.services.SurveillantService;
 import com.example.surveillance.services.SurveillantServiceImplementation;
 import com.example.surveillance.SecurityConfig.JwtProvider;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.*;
 
+import javax.crypto.SecretKey;
 import java.util.List;
 import java.util.Optional;
 
@@ -140,6 +144,41 @@ public class SurveillantController {
     @GetMapping
     public List<Surveillant> getAllSurveillants() {
         return surveillantService.getAllSurveillants();
+    }
+    @GetMapping("/count/Professeur")
+    public ResponseEntity<Long> getCountProfesseur() {
+        long count = surveillantRepository.countByTypeProfesseur();
+        return ResponseEntity.ok(count);
+    }
+
+    @GetMapping("/count/Vacataire")
+    public ResponseEntity<Long> getCountVacataire() {
+        long count = surveillantRepository.countByTypeVacataire();
+        return ResponseEntity.ok(count);
+    }
+
+    @GetMapping("/count/Doctorant")
+    public ResponseEntity<Long> getCountDoctorant() {
+        long count = surveillantRepository.countByTypeDoctorant();
+        return ResponseEntity.ok(count);
+    }
+
+    @GetMapping("/validToken")
+    public ResponseEntity<String> validateToken(HttpServletRequest request) {
+        String jwt = request.getHeader("Authorization");
+
+        if (jwt != null && jwt.startsWith("Bearer ")) {
+            jwt = jwt.substring(7);
+            try {
+                SecretKey key = Keys.hmacShaKeyFor(JwtConstant.SECRET_KEY.getBytes());
+                Jwts.parser().setSigningKey(key).build().parseClaimsJws(jwt);
+                return ResponseEntity.ok("Token valide");
+            } catch (JwtException e) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token invalide");
+            }
+        }
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token manquant ou mal formaté");
     }
     @GetMapping("/userConnecter")
     public Surveillant userConnecter(@RequestHeader("Authorization") String authHeader) {

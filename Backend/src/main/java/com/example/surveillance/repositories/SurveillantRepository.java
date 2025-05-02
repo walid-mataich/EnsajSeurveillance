@@ -14,5 +14,14 @@ public interface SurveillantRepository extends JpaRepository<Surveillant,Long> {
 
     @Query("SELECT s FROM Surveillant s WHERE s.actif=true")
     List<Surveillant> findByActifTrue();
+    @Query("SELECT COUNT(s) FROM Surveillant s WHERE s.type = 'Professeur'")
+    long countByTypeProfesseur();
 
+    // Méthode pour compter le nombre de surveillants de type "Vacataire"
+    @Query("SELECT COUNT(s) FROM Surveillant s WHERE s.type = 'Vacataire'")
+    long countByTypeVacataire();
+
+    // Méthode pour compter le nombre de surveillants de type "Doctorant"
+    @Query("SELECT COUNT(s) FROM Surveillant s WHERE s.type = 'Doctorant'")
+    long countByTypeDoctorant();
 }

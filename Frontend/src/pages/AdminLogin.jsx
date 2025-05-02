@@ -97,7 +97,7 @@ function AdminLogin() {
                     Se connecter
                 </button>
             </div>
-            {laoding && <LoginLoadin/>}
+            {laoding && <p>loading...</p>}
         </div>
     );
 }
