@@ -11,6 +11,7 @@ function SurvLogin() {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const [showPassword, setShowPassword] = useState(false);
    
 
     const handleLogin = async () => {
@@ -68,13 +69,22 @@ function SurvLogin() {
                 />
                 
                 {/* Champ Mot de passe */}
-                <input
-                    className="w-full p-3 mb-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    type="password"
-                    placeholder="Mot de passe"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                />
+                <div className="relative mb-4">
+                    <input
+                        className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10"
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Mot de passe"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+                    <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600 focus:outline-none"
+                    >
+                        {showPassword ? "🙈" : "👁️"}
+                    </button>
+                </div>
                 
                 {/* Message d'erreur */}
                 {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
