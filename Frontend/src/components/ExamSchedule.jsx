@@ -274,6 +274,7 @@ const ExamSchedule = () => {
             <span className="text-lg font-medium text-gray-700">
               les salles
             </span>
+            <div className="max-h-[90px] overflow-y-auto mb-2">
             {salles.map((salle) => (
               <label key={salle.idSalle} className="flex items-center  gap-2">
                 <input
@@ -293,6 +294,7 @@ const ExamSchedule = () => {
                 {salle.nomSale}
               </label>
             ))}
+            </div>
 
             <div className="flex justify-between">
               <button

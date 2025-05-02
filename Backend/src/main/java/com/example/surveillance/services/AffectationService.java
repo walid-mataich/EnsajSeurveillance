@@ -125,5 +125,12 @@ public class AffectationService {
                 affectationRepo.save(affectation.get());
             }
         }
+        List<Surveillant> surveillants = surveillantRepo.findAll();
+        for(Surveillant surveillant : surveillants) {
+            int count = affectationRepo.countBySurveillant(surveillant);
+            surveillant.setNbrSurveillance(count);
+            surveillantRepo.save(surveillant);
+        }
+
     }
 }
