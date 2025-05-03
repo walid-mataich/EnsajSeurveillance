@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import api from "../api/axios";
 import ChoixBySurv from "./ChoixBySurv";
+import ChoixEditor from "./ChoixEditor";
 
 const Cren = () => {
   const [exams, setExams] = useState([]);
@@ -146,6 +147,23 @@ const Cren = () => {
   if (loading)
     return <p className="text-center text-gray-600">Chargement...</p>;
   if (error) return <p className="text-center text-red-500">{error}</p>;
+
+  if (choix.length > 0) {
+    return (
+      <div className="container mx-auto p-6">
+        <div className="mb-8 text-center">
+          <h1 className="text-2xl font-bold text-green-700">
+            Vous avez déjà soumis vos préférences
+          </h1>
+          <p className="text-gray-700 text-xl font-bold">
+            Vous pouvez les modifier ci-dessous :
+          </p>
+        </div>
+
+        <ChoixEditor choixList={choix} />
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto p-6">

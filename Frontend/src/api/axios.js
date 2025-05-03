@@ -10,21 +10,23 @@ const api = axios.create({
 });
 
 // Ajouter dynamiquement le bon token à chaque requête
-api.interceptors.request.use((config) => {
-  // On essaye d'abord avec jwtTokenadmin, sinon jwtTokensurv
-  const adminToken = localStorage.getItem("jwtTokenadmin");
-  const survToken = localStorage.getItem("jwtTokensurv");
+api.interceptors.request.use(
+  (config) => {
+    // On essaye d'abord avec jwtTokenadmin, sinon jwtTokensurv
+    const adminToken = localStorage.getItem("jwtTokenadmin");
+    const survToken = localStorage.getItem("jwtTokensurv");
 
-  const token = adminToken || survToken;
+    const token = adminToken || survToken;
 
-  if (token) {
-    config.headers["Authorization"] = `Bearer ${token}`;
+    if (token) {
+      config.headers["Authorization"] = `Bearer ${token}`;
+    }
+
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
   }
-
-  return config;
-}, (error) => {
-  return Promise.reject(error);
-});
+);
 
 export default api;
-

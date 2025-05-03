@@ -4,6 +4,7 @@ import {
   LayoutDashboardIcon,
   NotebookPen,
   Users,
+  History,
   Clock,
   SquarePen,
   BellRing,
@@ -69,8 +70,8 @@ const SurvSidebar = () => {
               <SquarePen />
             </SidebarItem> */}
 
-            <SidebarItem text="Notification" path="/Surv/Notif">
-              <BellRing />
+            <SidebarItem text="Mon historique" path="/Surv/monhistorique">
+              <History />
             </SidebarItem>
 
             <SidebarItem text="Profile" path="/Surv/Profile">

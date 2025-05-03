@@ -41,6 +41,16 @@ public class MatiereService {
         }
 
     }
+    public void updateMatiere(String nomMatiere,int niveau, Long ChefId,Long Id){
+        Optional<Matiere> existingOpt = matiereRepositoriy.findById(Id);
+        if(existingOpt.isPresent()){
+            Matiere matiere = existingOpt.get();
+            matiere.setNomMatiere(nomMatiere);
+            matiere.setNiveau(niveau);
+            matiere.setChefDeModule(surveillantRepository.findById(ChefId).get());
+            matiereRepositoriy.save(matiere);
+        }
+    }
 
 
 }

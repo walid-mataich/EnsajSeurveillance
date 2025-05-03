@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @RestController
@@ -47,5 +48,13 @@ public class ChoixController {
         return choixRepository.countSurvAvecChoix();
     }
 
-
+    @PutMapping("/modifier/{idChoix}/{newOrdre}")
+    public void modifierChoix(@PathVariable Integer idChoix, @PathVariable int newOrdre){
+        Optional<Choix> choixOpt = choixRepository.findById(idChoix);
+        if(choixOpt.isPresent()){
+            Choix choix = choixOpt.get();
+            choix.setOrdre(newOrdre);
+            choixRepository.save(choix);
+        }
+}
 }

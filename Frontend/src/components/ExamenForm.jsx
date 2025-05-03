@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import api from "../api/axios"; // Importing your Axios config
+import { useNavigate } from "react-router-dom"; // Importing useNavigate for navigation
 
 const ExamenForm = () => {
   const [matiereId, setMatiereId] = useState("");
@@ -11,6 +12,7 @@ const ExamenForm = () => {
   const [message, setMessage] = useState("");
   const [salles, setSalles] = useState([]);
   const [sallesChoisies, setSallesChoisies] = useState([]);
+  const navigate = useNavigate(); // Hook pour la navigation
 
   useEffect(() => {
     const fetchExams = async () => {
@@ -58,7 +60,13 @@ const ExamenForm = () => {
     }
   };
 
-  return (
+  return (<>
+  <button
+        onClick={() => navigate(-1)}
+        className="mb-4 text-blue-600 hover:underline"
+      >
+        ← Retour
+      </button>
     <div className="max-w-2xl mx-auto p-8 bg-white shadow-2xl rounded-xl mt-12">
       <h2 className="text-3xl font-semibold text-center text-gray-800 mb-8">
         Ajouter un Examen
@@ -170,6 +178,7 @@ const ExamenForm = () => {
         </button>
       </form>
     </div>
+    </>
   );
 };
 

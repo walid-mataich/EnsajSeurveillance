@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import api from "../api/axios";
 import LoadingPulse from "./LoadingPulse";
+import { a } from "framer-motion/client";
 
 const PlanningTable = ({ niveau, affectations, onCellClick }) => {
   const [slotsByDate, setSlotsByDate] = useState({});
@@ -122,6 +123,8 @@ const Rslt = () => {
   const [newSurvs, setNewSurvs] = useState([]);
   const [selectedCell, setSelectedCell] = useState(null);
   const [updatedSurvs, setUpdatedSurvs] = useState([]);
+  const [loadingHistorique, setLoadingHistorique] = useState(false);
+  const [successHistorique, setSuccessHistorique] = useState(false);
 
   useEffect(() => {
     try {
@@ -167,6 +170,19 @@ const Rslt = () => {
     }
   };
 
+  const handleHistorique = async () => {
+    setLoadingHistorique(true);
+    setSuccessHistorique(false);
+    try {
+      await api.post("/affectations/historiqueSave");
+      setSuccessHistorique(true);
+    } catch (error) {
+      console.error("Erreur lors de l'enregistrement de l'historique :", error);
+    } finally {
+      setLoadingHistorique(false);
+    }
+  };
+
   const handleUpdate = async (idAff, idNewSurv) => {
     setLoading(true);
     try {
@@ -208,6 +224,17 @@ const Rslt = () => {
             : "Générer"
           : "Réinitialiser"}
       </button>
+      {affectations.length !== 0 && (
+        <button
+          className="px-12 m-10 bg-blue-700 py-2 rounded cursor-pointer text-white print:hidden"
+          onClick={handleHistorique}
+          disabled={loadingHistorique}
+        >
+          {loadingHistorique
+            ? "Enregistrement..."
+            : "Valider (enregistrer dans l'historique)"}
+        </button>
+      )}
 
       {affectations.length !== 0 && (
         <>

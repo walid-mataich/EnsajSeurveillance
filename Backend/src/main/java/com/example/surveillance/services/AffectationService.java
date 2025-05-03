@@ -4,6 +4,7 @@ import com.example.surveillance.entity.*;
 import com.example.surveillance.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -16,6 +17,8 @@ public class AffectationService {
     @Autowired private ChoixRepository choixRepo;
     @Autowired private AffectationRepository affectationRepo;
     @Autowired private SalleRepository salleRepo;
+    @Autowired
+    private AffectationHistoriqueRepository affectationHistoriqueRepository;
 
     public void assignSurveillance() {
         affectationRepo.deleteAll();
@@ -133,4 +136,19 @@ public class AffectationService {
         }
 
     }
+
+
+    public void historiqueSave(){
+        for (Affectation a : affectationRepo.findAll()) {
+            AffectationHistorique affHistorique = new AffectationHistorique();
+            affHistorique.setSurveillant(a.getSurveillant());
+            affHistorique.setNomMatiere(a.getExamen().getMatiere().getNomMatiere());
+            affHistorique.setJour(a.getExamen().getJour());
+            affHistorique.setDebut(a.getExamen().getDebut());
+            affHistorique.setFin(a.getExamen().getFin());
+            affHistorique.setSalle(a.getSalle().getNomSale());
+            affectationHistoriqueRepository.save(affHistorique);
+        }
+    }
+
 }

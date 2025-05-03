@@ -4,17 +4,16 @@ import {
   LayoutDashboardIcon,
   NotebookPen,
   Users,
-  UserRoundPlus ,
+  UserRoundPlus,
   SquarePen,
   BellRing,
   CircleUser,
+  DoorClosed,
+  Pen,
 } from "lucide-react";
 import SidebarItem from "./SidebarItem";
 
-
 const Sidebar = () => {
-
-  
   const [isOpen, setIsOpen] = useState(false);
   const sidebarRef = useRef(null);
 
@@ -56,7 +55,7 @@ const Sidebar = () => {
           </div>
 
           <ul className="space-y-2 font-medium">
-            <SidebarItem text="Dashboard" path="/admin/dashboard" >
+            <SidebarItem text="Dashboard" path="/admin/dashboard">
               <LayoutDashboardIcon />
             </SidebarItem>
 
@@ -64,12 +63,20 @@ const Sidebar = () => {
               <NotebookPen />
             </SidebarItem>
 
+            <SidebarItem text="Salles" path="/admin/salles">
+              <DoorClosed />
+            </SidebarItem>
+
+            <SidebarItem text="Matieres" path="/admin/matieres">
+              <Pen />
+            </SidebarItem>
+
             <SidebarItem text="Surveillants" path="/admin/listeSurv">
-              <UserRoundPlus  />
+              <UserRoundPlus />
             </SidebarItem>
 
             <SidebarItem text="Administrateurs" path="/admin/listeAdmin">
-              <UserRoundPlus  />
+              <UserRoundPlus />
             </SidebarItem>
 
             <SidebarItem text="Assignation" path="/admin/Assignation">

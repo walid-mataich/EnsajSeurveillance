@@ -1,8 +1,10 @@
 package com.example.surveillance.controllers;
 
 import com.example.surveillance.entity.Affectation;
+import com.example.surveillance.entity.AffectationHistorique;
 import com.example.surveillance.entity.Surveillant;
 import com.example.surveillance.mailing.MailService;
+import com.example.surveillance.repositories.AffectationHistoriqueRepository;
 import com.example.surveillance.repositories.AffectationRepository;
 import com.example.surveillance.repositories.SurveillantRepository;
 import com.example.surveillance.services.AffectationService;
@@ -27,6 +29,8 @@ public class AffectationController {
 
     @Autowired
     private SurveillantRepository surveillantRepository;
+    @Autowired
+    private AffectationHistoriqueRepository affectationHistoriqueRepository;
 
 
     public AffectationController(AffectationService affectationService, AffectationRepository affectationRepository) {
@@ -66,6 +70,16 @@ public class AffectationController {
     @PutMapping("/modifier/{idAff}/{idNewSurv}")
     public void modifierAffectation(@PathVariable Integer idAff, @PathVariable Long idNewSurv) {
         affectationService.modifierAffectation(idAff,idNewSurv);
+    }
+
+    @PostMapping("/historiqueSave")
+    public void historiqueSave() {
+        affectationService.historiqueSave();
+    }
+
+    @GetMapping("/historique/{id}")
+    public List<AffectationHistorique> historique(@PathVariable Long id) {
+        return affectationHistoriqueRepository.findBySurveillant_Id(id);
     }
 
 
