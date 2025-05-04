@@ -33,6 +33,8 @@ import Profile from "./pages/Profile";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Notification from "./pages/Notification";  
+import MotpassOublier from "./pages/MotpassOublier";
+import ResetPassword from "./pages/MotpasseReset";
 
 
 // Route privée pour administrateur : redirige vers /loginadmin si pas de token
@@ -152,6 +154,8 @@ const router = createBrowserRouter(
       <Route path="/log" element={<Log />} />
       <Route path="/about" element={<About />} />
       <Route path="/contact" element={<Contact />} />
+      <Route path="/oublier" element={<MotpassOublier />} />
+      <Route path="/resetMp" element={<ResetPassword />} />
 
     </>
   )

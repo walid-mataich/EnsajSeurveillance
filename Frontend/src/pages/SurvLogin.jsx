@@ -75,9 +75,11 @@ function SurvLogin() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                 />
+                <a href="/oublier" className='text-red-500' >Mot de passe oublié?</a>
                 
                 {/* Message d'erreur */}
                 {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+
                 
                 {/* Bouton de connexion */}
                 <button

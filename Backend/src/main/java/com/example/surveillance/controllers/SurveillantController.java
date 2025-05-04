@@ -7,6 +7,8 @@ import com.example.surveillance.mailing.MailService;
 import com.example.surveillance.repositories.SurveillantRepository;
 import com.example.surveillance.response.AuthResponse;
 import com.example.surveillance.response.ModifierMp;
+import com.example.surveillance.response.ResetPasswordRequest;
+import com.example.surveillance.response.JwtUtil;
 import com.example.surveillance.services.SurveillantService;
 import com.example.surveillance.services.SurveillantServiceImplementation;
 import com.example.surveillance.SecurityConfig.JwtProvider;
@@ -44,6 +46,7 @@ public class SurveillantController {
 
     @Autowired
     private SurveillantRepository surveillantRepository;
+
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -225,6 +228,88 @@ public class SurveillantController {
         );
 
         return ResponseEntity.ok("Surveillant supprimé avec succès !");
+    }
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest request) {
+        String token = request.getToken();
+        String email;
+
+        try {
+            email = JwtUtil.extractUsername(token);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Token invalide ou expiré.");
+        }
+
+        Surveillant surveillant = surveillantRepository.findByEmail(email);
+        if (surveillant==null) {
+            return ResponseEntity.badRequest().body("Utilisateur introuvable.");
+        }
+        surveillant.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        surveillantRepository.save(surveillant);
+
+        return ResponseEntity.ok("Mot de passe mis à jour avec succès.");
+    }
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody Surveillant surv) {
+        String email = surv.getEmail();
+        Surveillant surveillant = surveillantRepository.findByEmail(email);
+
+        if (surveillant == null) {
+            return ResponseEntity.badRequest().body("Email introuvable.");
+        }
+
+        String token = JwtUtil.generateToken(surveillant.getEmail(), 60);
+        String resetLink = "http://localhost:5173/resetMp?token=" + token;
+
+        // Construction du HTML
+        String htmlContent = """
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 20px auto;">
+            <div style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 24px;">
+                <h1 style="color: #2d3748; font-size: 24px; margin-bottom: 16px;">
+                    RÉINITIALISATION DE MOT DE PASSE
+                </h1>
+                
+                <p style="color: #4a5568; margin-bottom: 24px;">
+                    Bonjour %s,<br><br>
+                    Vous avez demandé à réinitialiser votre mot de passe. Cliquez sur le bouton ci-dessous pour procéder à la réinitialisation :
+                </p>
+
+                <div style="text-align: center; margin: 32px 0;">
+                    <a href="%s" style="
+                        background-color: #4299e1;
+                        color: white;
+                        padding: 12px 24px;
+                        border-radius: 6px;
+                        text-decoration: none;
+                        font-weight: bold;
+                        display: inline-block;
+                    ">
+                        Réinitialiser mon mot de passe
+                    </a>
+                </div>
+
+                <p style="color: #718096; font-size: 14px;">
+                    Ce lien expirera dans 60 minutes.<br>
+                    Si vous n'avez pas demandé cette réinitialisation, veuillez ignorer cet email.
+                </p>
+
+                <hr style="border-color: #e2e8f0; margin: 24px 0;">
+
+                <p style="color: #a0aec0; font-size: 12px;">
+                    Cordialement,<br>
+                    L'équipe de surveillance des examens - ENSAJ
+                </p>
+            </div>
+        </div>
+        """.formatted(surveillant.getPrenom(), resetLink);
+
+        mailService.sendHtmlMail(
+                surveillant.getEmail(),
+                "Réinitialisation de votre mot de passe ENSAJ",
+                htmlContent
+        );
+
+        return ResponseEntity.ok("Email envoyé.");
     }
 
 
