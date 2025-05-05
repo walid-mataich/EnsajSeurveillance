@@ -22,7 +22,7 @@ public class TestController {
     public String testMail(@RequestBody List<EmailRequest> emailRequests){
         for (EmailRequest req : emailRequests) {
 //            mailService.sendMail(req.getTo(), req.getSubject(), req.getBody());
-            mailService.sendHtmlMail(req.getTo(), "test","https://localhost:5173/Surv/emploi");
+            mailService.sendHtmlMail(req.getTo(), "Pr.Assad","https://localhost:5173/");
         }
         return "les emails sont entrain d etre envoyes";
     }

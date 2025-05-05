@@ -1,6 +1,4 @@
 package com.example.surveillance.dto;
 
-public record PromptRequest(String prompt) {
-
-
+public record PromptRequest(String prompt, String user) {
 }

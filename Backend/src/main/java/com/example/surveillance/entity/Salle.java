@@ -30,6 +30,8 @@ public class Salle {
 
 
 
+
+
 //    @ManyToMany(mappedBy = "salles")
 //    @JsonManagedReference("exam-salle")
 //    Set<Examen> examens;

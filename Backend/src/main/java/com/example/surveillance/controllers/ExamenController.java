@@ -3,6 +3,7 @@ package com.example.surveillance.controllers;
 
 import com.example.surveillance.entity.Examen;
 import com.example.surveillance.entity.Salle;
+import com.example.surveillance.repositories.ExamenRepository;
 import com.example.surveillance.repositories.SalleRepository;
 import com.example.surveillance.services.ExamenService;
 import com.example.surveillance.services.SalleService;
@@ -24,6 +25,8 @@ public class ExamenController {
 
     @Autowired
     private final SalleRepository salleRepository;
+    @Autowired
+    private ExamenRepository examenRepository;
 
 
     public ExamenController(ExamenService examenService, SalleRepository salleRepository) {
@@ -76,6 +79,12 @@ public class ExamenController {
         Examen savedExamen = examenService.createExamen(examen, matiereId, idSalles);
 
         return ResponseEntity.ok(savedExamen);
+    }
+
+    @CrossOrigin(origins = "*")
+    @DeleteMapping("/delete")
+    public void delete(){
+        examenRepository.deleteAll();
     }
 
 }

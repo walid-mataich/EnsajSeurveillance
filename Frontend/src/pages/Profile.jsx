@@ -79,7 +79,7 @@ function Profile() {
         <div className="bg-gradient-to-r from-blue-400 to-blue-600 w-24 h-24 rounded-full flex items-center justify-center text-white text-3xl mb-3">
           {user.prenom?.charAt(0) || user.nom?.charAt(0)}
         </div>
-        <h3 className="text-xl font-medium">{user.prenom} {user.nom}</h3>
+        <h3 className="text-xl font-medium">{user.nom} {user.prenom} </h3>
         <span className="bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full mt-2">
           {isAdmin ? "Administrateur" : "Surveillant"}
         </span>
@@ -117,7 +117,7 @@ function Profile() {
             <>
               <div className="form-group">
                 <label className="form-label flex items-center gap-2">
-                  Type Prof
+                  Type de surveillant
                 </label>
                 <p className="form-value">{user.type}</p>
               </div>

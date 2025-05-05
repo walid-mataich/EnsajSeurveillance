@@ -57,12 +57,17 @@ const SalleForm = () => {
 
           <label className="block">
             <span className="text-lg font-medium text-gray-700">Type</span>
-            <input
-              type="text"
+            <select
               value={type}
               onChange={(e) => setType(e.target.value)}
+              required
               className="mt-2 block w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400"
-            />
+            >
+              <option value="">-- Sélectionner un type --</option>
+              <option value="salle normale">Salle normale</option>
+              <option value="amphi">Amphi</option>
+              <option value="grand amphi">Grand amphi</option>
+            </select>
           </label>
 
           <label className="block">

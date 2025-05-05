@@ -116,7 +116,7 @@ const ExamSchedule = () => {
                 {Object.entries(groupedExams).map(([day, exams]) =>
                   exams.map((exam) => (
                     <td key={exam.idExamen} className="py-2 px-4 border">
-                      {exam.debut} - {exam.fin}
+                      {exam.debut?.slice(0, 5)} - {exam.fin?.slice(0, 5)}
                     </td>
                   ))
                 )}
@@ -149,7 +149,12 @@ const ExamSchedule = () => {
                 {Object.entries(groupedExams).map(([day, exams]) =>
                   exams.map((exam) => (
                     <td key={exam.idExamen} className="py-2 px-4 border">
-                      {exam.nbrDesSalles} salle(s)
+                      {exam.salles
+                        .slice() // Crée une copie du tableau pour éviter de modifier l'original
+                        .sort((a, b) => a.nomSale.localeCompare(b.nomSale)) // Trie par ordre alphabétique
+                        .map((salle, index) => (
+                          <span key={index}>{`  ${salle.nomSale} `}</span>
+                        ))}
                     </td>
                   ))
                 )}
@@ -161,9 +166,15 @@ const ExamSchedule = () => {
                     <td key={exam.idExamen} className="py-2 px-4 border">
                       <button
                         onClick={() => handleEdit(exam)}
-                        className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-700"
+                        className=" text-blue-500 px-3 py-1 m-1 border-1 border-blue-500 rounded hover:bg-blue-500 hover:text-white"
                       >
                         Modifier
+                      </button>
+                      <button
+                        onClick={() => handleDelete(exam)}
+                        className="text-red-500 px-3 py-1 border-1 border-red-500 rounded hover:bg-red-500 hover:text-white"
+                      >
+                        Supprimer
                       </button>
                     </td>
                   ))
@@ -275,25 +286,25 @@ const ExamSchedule = () => {
               les salles
             </span>
             <div className="max-h-[90px] overflow-y-auto mb-2">
-            {salles.map((salle) => (
-              <label key={salle.idSalle} className="flex items-center  gap-2">
-                <input
-                  type="checkbox"
-                  value={salle.idSalle}
-                  className="w-4 h-4"
-                  onChange={(e) => {
-                    const { value, checked } = e.target;
-                    setSallesChoisies((prev) =>
-                      checked
-                        ? [...prev, value]
-                        : prev.filter((id) => id !== value)
-                    );
-                  }}
-                  // à ajouter si tu veux gérer les salles sélectionnées
-                />
-                {salle.nomSale}
-              </label>
-            ))}
+              {salles.map((salle) => (
+                <label key={salle.idSalle} className="flex items-center  gap-2">
+                  <input
+                    type="checkbox"
+                    value={salle.idSalle}
+                    className="w-4 h-4"
+                    onChange={(e) => {
+                      const { value, checked } = e.target;
+                      setSallesChoisies((prev) =>
+                        checked
+                          ? [...prev, value]
+                          : prev.filter((id) => id !== value)
+                      );
+                    }}
+                    // à ajouter si tu veux gérer les salles sélectionnées
+                  />
+                  {salle.nomSale}
+                </label>
+              ))}
             </div>
 
             <div className="flex justify-between">

@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
 import api from "../api/axios";
 import ReactMarkdown from "react-markdown";
 
@@ -34,7 +33,7 @@ const ChatBot = () => {
     try {
       const res = await api.post(
         "/chat",
-        { prompt: input + `i am ${survId}` },
+        { prompt: input, user: survId },
         { headers: { "Content-Type": "application/json" } }
       );
 
@@ -108,13 +107,11 @@ const ChatBot = () => {
               className="chatbot-body flex-1 p-4 overflow-y-auto bg-no-repeat bg-center bg-cover relative"
               style={{ backgroundColor: "white" }}
             >
-              {/* Blur Overlay */}
               <div
                 className="absolute inset-0 bg-black opacity-50"
                 style={{ filter: "blur(10px)", zIndex: "-1" }}
               ></div>
 
-              {/* Messages */}
               {messages.map((msg, index) => (
                 <div
                   key={index}

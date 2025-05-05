@@ -55,7 +55,7 @@ public class MailService {
 
             helper.setFrom("your_email@gmail.com");
             helper.setTo(to);
-            helper.setSubject("📅 Votre planning de surveillance est disponible");
+            helper.setSubject("Confirmation de vos choix de surveillance");
 
             // Utilisation du chemin absolu pour accéder à l'image
             FileSystemResource logo = new FileSystemResource(new File("src/main/resources/logo.png")); // Chemin vers ton logo dans resources
@@ -63,13 +63,13 @@ public class MailService {
             String htmlContent = "<!DOCTYPE html><html><body style='font-family: Arial, sans-serif;'>" +
                     "<div style='max-width:600px;margin:auto;border:1px solid #ddd;border-radius:10px;padding:20px;'>" +
                     "<h2 style='color:#004080;'>Bonjour " + fullName + ",</h2>" +
-                    "<p>Votre <strong>planning de surveillance</strong> est désormais disponible.</p>" +
-                    "<p>Veuillez cliquer sur le bouton ci-dessous pour le consulter :</p>" +
+                    "<p>Vous avez bien <strong>soumis vos choix de créneaux</strong> pour la surveillance des examens.</p>" +
+                    "<p>Vous pouvez les consulter ou les modifier en cliquant sur le bouton ci-dessous :</p>" +
                     "<p style='text-align:center;margin:30px 0;'>" +
                     "<a href='" + planningUrl + "' style='background-color:#004080;color:#fff;padding:12px 24px;" +
-                    "text-decoration:none;border-radius:6px;display:inline-block;'>Voir mon planning</a>" +
+                    "text-decoration:none;border-radius:6px;display:inline-block;'>Consulter mes choix</a>" +
                     "</p>" +
-                    "<p>Merci de vérifier vos créneaux et de nous signaler toute anomalie.</p>" +
+//                    "<p>Merci de vérifier vos créneaux et de nous signaler toute anomalie.</p>" +
                     "<p style='margin-top:40px;'>Cordialement,<br>Administration<br>Survensaj</p>" +
                     "<p><img src='cid:logo' alt='Logo' style='width: 150px; height: auto; margin-bottom: 20px;' /></p>" +  // Image inline avec CID
                     "</div></body></html>";

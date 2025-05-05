@@ -15,17 +15,19 @@ const AffectationCard = ({ affectation }) => {
 
       <div className="flex items-center gap-2 text-gray-700 mb-2">
         <Clock className="w-5 h-5 text-emerald-500" />
-        {debut} - {fin}
+        {debut.slice(0, 5)} - {fin.slice(0, 5)}
       </div>
 
       <div className="flex items-center gap-2 text-gray-700 mb-2">
         <BookOpen className="w-5 h-5 text-indigo-500" />
-        <span>{matiere.nomMatiere} (2AP-{matiere.niveau})</span>
+        <span>
+          {matiere.nomMatiere} (2AP-{matiere.niveau})
+        </span>
       </div>
 
       <div className="flex items-center gap-2 text-gray-700 mb-2">
         <MapPin className="w-5 h-5 text-rose-500" />
-        <span>{salle.nomSale} {salle.type && `- ${salle.type}`}</span>
+        <span>{salle.nomSale} </span>
       </div>
 
       <div className="text-sm text-gray-500 italic mt-2">

@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import api from "../api/axios";
 import LoadingPulse from "./LoadingPulse";
 import { a } from "framer-motion/client";
+import SubmissionStatus from "./SubmissionStatus";
+import { useNavigate } from "react-router-dom";
 
 const PlanningTable = ({ niveau, affectations, onCellClick }) => {
   const [slotsByDate, setSlotsByDate] = useState({});
@@ -129,7 +131,7 @@ const Rslt = () => {
   useEffect(() => {
     try {
       api.get("/choix").then((res) => {
-        // console.log(res.data);
+        console.log(res.data);
       });
     } catch (e) {
       console.log(e);
@@ -210,8 +212,19 @@ const Rslt = () => {
       .catch((err) => console.error(err));
   }, []);
 
+  const navigate = useNavigate();
+
   return (
     <div className="rslt-container text-center print:block print:p-4 print:bg-white print:text-black">
+      {affectations.length === 0 && <SubmissionStatus />}
+      {affectations.length === 0 && (
+        <button
+          className="px-12 m-10 border-2 text-blue-700 border-blue-700 py-2 rounded cursor-pointer  print:hidden"
+          onClick={() => navigate("/admin/verifAff")}
+        >
+          Analiser
+        </button>
+      )}
       <button
         onClick={() => {
           affectations.length === 0 ? handleGenerate() : handleDelete();
@@ -221,7 +234,7 @@ const Rslt = () => {
         {affectations.length === 0
           ? loading
             ? "Génération en cours..."
-            : "Générer"
+            : "Générer les affectations"
           : "Réinitialiser"}
       </button>
       {affectations.length !== 0 && (

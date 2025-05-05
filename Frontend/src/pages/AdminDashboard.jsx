@@ -15,7 +15,10 @@ function AdminDashboard() {
         const response2 = await api.get("surveillants");
         setSurveillants(response2.data);
       } catch (error) {
-        console.error("Erreur lors de la récupération des surveillants:", error);
+        console.error(
+          "Erreur lors de la récupération des surveillants:",
+          error
+        );
       }
     };
     fetchSurv();
@@ -27,7 +30,10 @@ function AdminDashboard() {
         const response = await api.get("Admin/userConnecter");
         setAdmin(response.data);
       } catch (error) {
-        console.error("Erreur lors de la récupération de l'utilisateur connecté", error);
+        console.error(
+          "Erreur lors de la récupération de l'utilisateur connecté",
+          error
+        );
       }
     };
     fetchAdmin();
@@ -58,12 +64,14 @@ function AdminDashboard() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <div className="flex flex-col items-center justify-center w-full rounded-sm border border-gray-400 p-4">
-          <h1 className="text-xl sm:text-2xl text-indigo-900 mb-4">Types des surveillants</h1>
+          <h1 className="text-xl sm:text-2xl text-indigo-900 mb-4">
+            Types des surveillants
+          </h1>
           <LabelsAboveBars />
         </div>
 
         <div className="flex items-center justify-center w-full rounded-sm border border-gray-400 p-4">
-          <div className="flex flex-col sm:flex-row justify-around w-full gap-6 bg-white p-4 rounded shadow-sm">
+          <div className="flex flex-col sm:flex-row justify-around w-full gap-6 bg-white p-4 rounded ">
             <div className="flex flex-col items-center w-full sm:w-1/2">
               <h1 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
                 <School className="w-6 h-6 sm:w-8 sm:h-8 text-blue-600" />
@@ -78,6 +86,7 @@ function AdminDashboard() {
                 className="count-up-text text-4xl sm:text-5xl font-bold text-blue-800 mt-2"
               />
             </div>
+            
 
             <div className="flex flex-col items-center w-full sm:w-1/2">
               <h1 className="text-xl sm:text-2xl font-bold flex items-center gap-2">

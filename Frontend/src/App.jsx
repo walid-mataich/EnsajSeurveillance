@@ -43,6 +43,7 @@ import MatieresPage from "./pages/MatieresPage";
 import TestChoix from "./components/TestChoix";
 import MonHistorique from "./components/MonHistorique";
 import HistoriqueSurv from "./pages/HistoriqueSurv";
+import Besoin from "./components/Besoin";
 
 // Route privée pour administrateur : redirige vers /loginadmin si pas de token
 const AdminPrivateRoute = ({ children }) => {
@@ -150,6 +151,7 @@ const router = createBrowserRouter(
         <Route path="add-matiere" element={<AddMatieres />} />
         <Route path="salles" element={<SallesPage />} />
         <Route path="matieres" element={<MatieresPage />} />
+        <Route path="verifAff" element={<Besoin />} />
         <Route path="edit-matiere/:idMatiere" element={<EditMatierePage />} />
         <Route path="edit-salle/:idSalle" element={<EditSallePage />} />
       </Route>
