@@ -3,6 +3,10 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import api from './../api/axios';
 import LoginLoadin from '../components/LoginLoadin';
+import {
+Eye,
+EyeClosed
+} from "lucide-react";
 
 function SurvLogin() {
     useEffect(()=>{localStorage.clear();},[]);
@@ -12,7 +16,7 @@ function SurvLogin() {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
-   
+
 
     const handleLogin = async () => {
         try {
@@ -82,12 +86,15 @@ function SurvLogin() {
                         onClick={() => setShowPassword(!showPassword)}
                         className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600 focus:outline-none"
                     >
-                        {showPassword ? "🙈" : "👁️"}
+                        {showPassword ? <EyeClosed/> : <Eye/>}
                     </button>
                 </div>
                 
+                <a href="/survOublier" className='text-red-500' >Mot de passe oublié?</a>
+
                 {/* Message d'erreur */}
-                {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+                {error && <p className="text-red-700 text-sm mb-4">{error}</p>}
+
                 
                 {/* Bouton de connexion */}
                 <button

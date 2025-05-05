@@ -24,4 +24,6 @@ public interface SurveillantRepository extends JpaRepository<Surveillant,Long> {
     // Méthode pour compter le nombre de surveillants de type "Doctorant"
     @Query("SELECT COUNT(s) FROM Surveillant s WHERE s.type = 'Doctorant'")
     long countByTypeDoctorant();
+
+    boolean existsByEmail(String email);
 }

@@ -85,9 +85,12 @@ function AdminLogin() {
                         {showPassword ? <EyeClosed/> : <Eye/>}
                     </button>
                 </div>
-                
+            
+
+                <a href="/adminOublier" className='text-red-500' >Mot de passe oublié?</a>
+
                 {/* Message d'erreur */}
-                {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+                {error && <p className="text-red-700 text-sm mb-4">{error}</p>}
                 
                 {/* Bouton de connexion */}
                 <button
@@ -96,10 +99,14 @@ function AdminLogin() {
                 >
                     Se connecter
                 </button>
+    
+            {laoding && <p><LoginLoadin/></p>}
+
             </div>
             {laoding && <p>loading...</p>}
         </div>
     );
+    
 }
 
 export default AdminLogin;
