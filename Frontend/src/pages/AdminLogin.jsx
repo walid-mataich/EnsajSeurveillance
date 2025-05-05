@@ -103,7 +103,6 @@ function AdminLogin() {
             {laoding && <p><LoginLoadin/></p>}
 
             </div>
-            {laoding && <p>loading...</p>}
         </div>
     );
     

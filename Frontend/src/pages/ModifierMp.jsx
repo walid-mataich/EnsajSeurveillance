@@ -68,8 +68,14 @@ function ModifierMp() {
     }
   };
 
-  return (
-    <div className="flex justify-center items-center min-h-screen px-4 bg-gray-100">
+  return (<>
+<button
+        onClick={() => navigate(-1)}
+        className="mb-4 text-blue-600 hover:underline"
+      >
+        ← Retour
+      </button>
+    <div className="flex justify-center items-center min-h-screen px-4 ">
   <div className="bg-white p-6 sm:p-8 rounded-xl shadow-md w-full max-w-md">
     <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
       Modifier le mot de passe
@@ -119,6 +125,7 @@ function ModifierMp() {
     </button>
   </div>
 </div>
+</>
   );
 }
 
