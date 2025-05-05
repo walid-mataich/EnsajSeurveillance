@@ -23,7 +23,7 @@ public class AffectationService {
     public void assignSurveillance() {
         affectationRepo.deleteAll();
 
-        List<Examen> examens = examenRepo.findAllByOrderByJourAscDebutAsc();
+        List<Examen> examens = examenRepo.findAll();
         List<Surveillant> surveillants = surveillantRepo.findByActifTrue();
 
         int totalSlots = examens.stream().mapToInt(examen ->
