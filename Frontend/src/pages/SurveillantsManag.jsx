@@ -2,6 +2,7 @@
 import api from "../api/axios";
 import { useEffect, useState } from "react";
 import Besoin from "../components/Besoin";
+import LoginLoadin from "../components/LoginLoadin";
 
 const SurveillantsManag = () => {
   const [email, setEmail] = useState("");
@@ -11,7 +12,9 @@ const SurveillantsManag = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [type, setType] = useState("");
   const [message, setMessage] = useState("");
+  const [erreur, setErreur] = useState("");
   const [ajouter, setAjouter] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,9 +37,12 @@ const SurveillantsManag = () => {
     };
 
     try {
+      setLoading(true);
+      setMessage("");
       await api.post("/surveillants/add", newSurveillant);
       setMessage("Surveillant ajouté avec succès !");
       setAjouter(true);
+      setErreur("");
       setEmail("");
       setNom("");
       setPrenom("");
@@ -45,9 +51,16 @@ const SurveillantsManag = () => {
       setType("");
     } catch (error) {
       console.error(error);
-      setMessage("Erreur lors de l'ajout du surveillant.");
+      setMessage("");
+      setErreur(error.response.data);
+      setLoading(false);
     }
   };
+   useEffect(() => {
+          if (loading) {
+              setLoading(false);
+          }
+      }, [message]);
 
   return (
     <>
@@ -58,7 +71,7 @@ const SurveillantsManag = () => {
           Ajouter un Surveillant
         </h2>
         {message && <p className={`text-center ${ajouter ? "text-green-600" : "text-red-600"} font-medium`}>{message}</p>}
-
+        {erreur && <p className={`text-center text-red-600 font-medium`}>{erreur}</p>}
         <form onSubmit={handleSubmit} className="space-y-4">
           <label className="block text-sm font-medium text-gray-700">
             Nom
@@ -135,7 +148,7 @@ const SurveillantsManag = () => {
               ))}
             </div>
           </div>
-
+             {loading &&<LoginLoadin/>}
           <button
             type="submit"
             className="w-full py-2 text-lg font-medium text-white bg-gradient-to-r from-blue-500 to-blue-700 rounded-lg shadow-md hover:from-blue-600 hover:to-blue-800 transition duration-300"

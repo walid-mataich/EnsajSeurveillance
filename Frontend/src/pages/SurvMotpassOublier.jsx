@@ -1,10 +1,10 @@
-// src/pages/ForgotPassword.jsx
+
 import { useState, useEffect } from "react";
 import api from "../api/axios";
 import LoadingPulse from "../components/LoadingPulse";
 import LoginLoadin from '../components/LoginLoadin';
 
-export default function ForgotPassword() {
+export default function MotpassOublier() {
     const [email, setEmail] = useState("");
     const [message, setMessage] = useState("");
     const [loading, setLoading] = useState(false);

@@ -3,7 +3,7 @@ import { useSearchParams,useNavigate } from "react-router-dom";
 import { useState,useEffect } from "react";
 import api from "../api/axios";
 
-export default function ResetPassword() {
+export default function AdminResetPassword() {
   const [params] = useSearchParams();
   const token = params.get("token");
     const [redirect, setRedirect] = useState(false);   
@@ -24,7 +24,7 @@ export default function ResetPassword() {
     }
 
     try {
-      await api.post("/surveillants/reset-password", { token, newPassword: password });
+      await api.post("/Admin/reset-password", { token, newPassword: password });
       setMessage("Mot de passe réinitialisé avec succès !");
       setRedirect(true);
       setError("");
@@ -36,7 +36,7 @@ export default function ResetPassword() {
   useEffect(() => {
     if (redirect) {
       const timer = setTimeout(() => {
-        navigate("/loginsurv");
+        navigate("/loginadmin");
       }, 3000);
       return () => clearTimeout(timer);
     }

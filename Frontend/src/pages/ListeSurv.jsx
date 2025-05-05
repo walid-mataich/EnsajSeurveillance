@@ -8,6 +8,7 @@ function ListeSurv() {
   const [survActuel, setSurvActuel] = useState(null);
   const [nom, setNom] = useState("");
   const [prenom, setPrenom] = useState("");
+   const [message, setMessage] = useState(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -61,7 +62,10 @@ function ListeSurv() {
         setModalOpen(false);
         chargerSurveillants();
       })
-      .catch((err) => console.error("Erreur modification :", err));
+      .catch((err) =>{ console.error("Erreur modification :", err);
+        setMessage(err.response.data);
+        setTimeout(() => setMessage(null), 3000);
+      });
   };
 
   return (
@@ -151,7 +155,7 @@ function ListeSurv() {
                 ))}
               </div>
             </div>
-  
+            {message && <p className="text-center text-red-600 font-medium">{message}</p>}
             <div className="flex justify-between pt-4">
               <button
                 type="button"

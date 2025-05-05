@@ -33,8 +33,12 @@ import Profile from "./pages/Profile";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Notification from "./pages/Notification";  
-import MotpassOublier from "./pages/MotpassOublier";
-import ResetPassword from "./pages/MotpasseReset";
+import MotpassOublier from "./pages/SurvMotpassOublier";
+import ResetPassword from "./pages/SurvMotpasseReset";
+import SurvResetPasswordGuard from "./components/SurvResetPasswordGuard"; 
+import AdminForgotPassword from './pages/AdminMPOublier';
+import AdminResetPassword from './pages/AdminMPReset';
+import AdminResetPasswordGuard from "./components/AdminResetPasswordGuard";
 
 
 // Route privée pour administrateur : redirige vers /loginadmin si pas de token
@@ -154,8 +158,20 @@ const router = createBrowserRouter(
       <Route path="/log" element={<Log />} />
       <Route path="/about" element={<About />} />
       <Route path="/contact" element={<Contact />} />
-      <Route path="/oublier" element={<MotpassOublier />} />
-      <Route path="/resetMp" element={<ResetPassword />} />
+      <Route path="/survOublier" element={<MotpassOublier />} />
+      <Route path="/adminOublier" element={<AdminForgotPassword/>} />
+      <Route path="/adminResetMp" element={
+        <AdminResetPasswordGuard>
+          <AdminResetPassword />
+          </AdminResetPasswordGuard>} />
+      <Route
+  path="/survResetMp"
+  element={
+    <SurvResetPasswordGuard>
+      <ResetPassword />
+    </SurvResetPasswordGuard>
+  }
+/>
 
     </>
   )

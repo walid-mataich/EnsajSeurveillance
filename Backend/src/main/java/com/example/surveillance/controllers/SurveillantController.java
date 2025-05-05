@@ -37,6 +37,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.crypto.SecretKey;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -89,32 +90,85 @@ public class SurveillantController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token manquant ou invalide !");
         }
 
-        String token = authHeader.substring(7); // Enlève "Bearer "
+        String token = authHeader.substring(7);
         Surveillant surveillant = customSurveillantDetails.findSurveillantProfileByJwt(token);
 
-        // Vérifie que l'ancien mot de passe est correct
+
         if (!passwordEncoder.matches(motdePasse.getCurrentPassword(), surveillant.getPassword())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Ancien mot de passe incorrect.");
         }
 
-        // Encode le nouveau mot de passe
+
         String encodedNewPassword = passwordEncoder.encode(motdePasse.getNewPassword());
 
-        // Met à jour le mot de passe
+
         surveillant.setPassword(encodedNewPassword);
-        surveillant.setFirstEntry(false); // désactive le flag firstEntry s'il existe
+        surveillant.setFirstEntry(false);
         surveillantRepository.save(surveillant);
         mailService.sendMail(surveillant.getEmail(),"modification de mot de passe", "votre mot de passe dans le site de surveillance est modifier avec succès ");
 
         return ResponseEntity.ok("Mot de passe modifié avec succès !");
     }
     @PostMapping("/add")
-    public ResponseEntity<Surveillant> addServeillant(@RequestBody Surveillant surveillant) {
-        mailService.sendMail(surveillant.getEmail(),"creation de compte surveillant", "votre mot de passe dans le site de surveillance est le suivant "+surveillant.getPassword()+" Vous pouvez l'échanger lors de la première connexion. ");
+    public ResponseEntity<?> addSurveillant(@RequestBody Surveillant surveillant) {
+        if (surveillantRepository.existsByEmail(surveillant.getEmail())) {
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body("Un surveillant avec cet email existe déjà.");
+        }
+
+        String htmlContent = """
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 20px auto;">
+        <div style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 24px;">
+            <h1 style="color: #2d3748; font-size: 24px; margin-bottom: 16px;">
+                BIENVENUE EN TANT QUE SURVEILLANT
+            </h1>
+
+            <p style="color: #4a5568; margin-bottom: 24px;">
+                Bonjour %s,<br><br>
+                Un compte surveillant a été créé pour vous sur la plateforme de surveillance des examens.<br>
+                Votre mot de passe initial est : <strong>%s</strong><br><br>
+                Veuillez le changer lors de votre première connexion pour garantir la sécurité de votre compte.
+            </p>
+
+            <p style="color: #4a5568; margin-bottom: 24px;">
+                Cliquez sur le lien ci-dessous pour accéder à votre espace :
+            </p>
+
+            <div style="text-align: center; margin: 32px 0;">
+                <a href="%s" style="background-color: #4299e1; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block;">
+                    Se connecter à mon compte
+                </a>
+            </div>
+
+            <p style="color: #718096; font-size: 14px;">
+                Ce lien est à usage personnel.<br>
+                Si vous n'êtes pas à l'origine de cette création, veuillez ignorer ce message.
+            </p>
+
+            <hr style="border-color: #e2e8f0; margin: 24px 0;">
+
+            <p style="color: #a0aec0; font-size: 12px;">
+                Cordialement,<br>
+                L'équipe de surveillance des examens - ENSAJ
+            </p>
+        </div>
+    </div>
+    """.formatted(surveillant.getPrenom(), surveillant.getPassword(), "http://localhost:5173/loginsurv");
+
+
+        mailService.sendHtmlMail(
+                surveillant.getEmail(),
+                "Création de votre compte surveillant - ENSAJ",
+                htmlContent
+        );
+
+
         String encodedPassword = passwordEncoder.encode(surveillant.getPassword());
         surveillant.setPassword(encodedPassword);
-        Surveillant savedSurveillant=surveillantService.createSurveillant(surveillant);
 
+
+        Surveillant savedSurveillant = surveillantService.createSurveillant(surveillant);
         return ResponseEntity.ok(savedSurveillant);
     }
 
@@ -130,7 +184,7 @@ public class SurveillantController {
             System.out.println("Sign in details - null" + surveillantDetails);
             throw new BadCredentialsException("Invalid username and password");
         } else {
-//             Compare the password entered with the encoded password from the database
+
 //            String encodedPassword = passwordEncoder.encode(surveillantDetails.getPassword());
 //            System.out.println(encodedPassword);
             System.out.println(surveillantDetails.getPassword());
@@ -189,29 +243,78 @@ public class SurveillantController {
             throw new RuntimeException("Token manquant ou invalide !");
         }
 
-        String token = authHeader.substring(7); // Supprime "Bearer "
+        String token = authHeader.substring(7);
         return customSurveillantDetails.findSurveillantProfileByJwt(token);
     }
     @PutMapping("/modifier/{id}")
-    public ResponseEntity<Surveillant> modifierSurveillant(@PathVariable("id") Long id, @RequestBody Surveillant surveillantModifie) {
-        Optional<Surveillant> optionalSurveillant = surveillantRepository.findById(id);
-        if (optionalSurveillant.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+    public ResponseEntity<?> modifierSurveillant(@PathVariable("id") Long id, @RequestBody Surveillant surveillantModifie) {
+        Surveillant surveillantExist = surveillantRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Surveillant introuvable"));
+
+        if (!surveillantExist.getEmail().equals(surveillantModifie.getEmail())
+                && surveillantRepository.existsByEmail(surveillantModifie.getEmail())) {
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body("L'email est déjà utilisé par un autre surveillant.");
         }
-        Surveillant surveillantExist = optionalSurveillant.get();
+
         surveillantExist.setNom(surveillantModifie.getNom());
         surveillantExist.setPrenom(surveillantModifie.getPrenom());
         surveillantExist.setEmail(surveillantModifie.getEmail());
         surveillantExist.setType(surveillantModifie.getType());
+
         if (surveillantModifie.getPassword() != null && !surveillantModifie.getPassword().isEmpty()) {
             String encodedPassword = passwordEncoder.encode(surveillantModifie.getPassword());
             surveillantExist.setPassword(encodedPassword);
         }
+
         Surveillant surveillantSauvegarde = surveillantRepository.save(surveillantExist);
-        mailService.sendMail(
+
+
+        String htmlContent = """
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 20px auto;">
+        <div style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 24px;">
+            <h1 style="color: #2d3748; font-size: 24px; margin-bottom: 16px;">
+                MISE À JOUR DE VOS INFORMATIONS DE COMPTE
+            </h1>
+
+            <p style="color: #4a5568; margin-bottom: 24px;">
+                Bonjour %s,<br><br>
+                Vos informations de compte ont été modifiées avec succès.<br>
+                Voici un récapitulatif des nouvelles données :
+            </p>
+
+            <ul style="color: #4a5568; margin-bottom: 24px;">
+                <li><strong>Nom :</strong> %s</li>
+                <li><strong>Prénom :</strong> %s</li>
+                <li><strong>Email :</strong> %s</li>
+                <li><strong>Type :</strong> %s</li>
+            </ul>
+
+            <p style="color: #4a5568; margin-bottom: 24px;">
+                Si vous n'avez pas demandé cette modification, veuillez contacter immédiatement l'administrateur.
+            </p>
+
+            <hr style="border-color: #e2e8f0; margin: 24px 0;">
+
+            <p style="color: #a0aec0; font-size: 12px;">
+                Cordialement,<br>
+                L'équipe de surveillance des examens - ENSAJ
+            </p>
+        </div>
+    </div>
+    """.formatted(
+                surveillantSauvegarde.getPrenom(),
+                surveillantSauvegarde.getNom(),
+                surveillantSauvegarde.getPrenom(),
                 surveillantSauvegarde.getEmail(),
-                "Mise à jour de votre profil",
-                "Vos informations ont été mises à jour avec succès par un administrateur dans le site de surveillance."
+                surveillantSauvegarde.getType()
+        );
+
+        mailService.sendHtmlMail(
+                surveillantSauvegarde.getEmail(),
+                "Mise à jour de votre compte - ENSAJ",
+                htmlContent
         );
 
         return ResponseEntity.ok(surveillantSauvegarde);
@@ -221,10 +324,37 @@ public class SurveillantController {
         Surveillant surveillantExist = surveillantRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Surveillant introuvable"));
         surveillantRepository.delete(surveillantExist);
-        mailService.sendMail(
+        String htmlContent = """
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 20px auto;">
+        <div style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 24px;">
+            <h1 style="color: #e53e3e; font-size: 24px; margin-bottom: 16px;">
+                SUPPRESSION DE VOTRE COMPTE SURVEILLANT
+            </h1>
+            
+            <p style="color: #4a5568; margin-bottom: 24px;">
+                Bonjour %s %s,<br><br>
+                Nous vous informons que votre compte de surveillant a été supprimé avec succès de la plateforme de surveillance des examens.<br>
+            </p>
+
+            <p style="color: #4a5568; margin-bottom: 24px;">
+                Si vous pensez qu’il s’agit d’une erreur ou que vous n’êtes pas à l’origine de cette suppression,
+                veuillez contacter immédiatement notre équipe de support.
+            </p>
+
+            <hr style="border-color: #e2e8f0; margin: 24px 0;">
+
+            <p style="color: #a0aec0; font-size: 12px;">
+                Cordialement,<br>
+                L'équipe de surveillance des examens - ENSAJ
+            </p>
+        </div>
+    </div>
+    """.formatted(surveillantExist.getPrenom(), surveillantExist.getNom());
+
+        mailService.sendHtmlMail(
                 surveillantExist.getEmail(),
-                "Suppression du compte",
-                "Votre compte de surveillant a été supprimé avec succès par un administrateur dans le site de surveillance."
+                "Suppression de votre compte surveillant - ENSAJ",
+                htmlContent
         );
 
         return ResponseEntity.ok("Surveillant supprimé avec succès !");
@@ -258,8 +388,8 @@ public class SurveillantController {
             return ResponseEntity.badRequest().body("Email introuvable.");
         }
 
-        String token = JwtUtil.generateToken(surveillant.getEmail(), 60);
-        String resetLink = "http://localhost:5173/resetMp?token=" + token;
+        String token = JwtUtil.generateToken(surveillant.getEmail(), 15);
+        String resetLink = "http://localhost:5173/survResetMp?token=" + token;
 
         // Construction du HTML
         String htmlContent = """
@@ -289,7 +419,7 @@ public class SurveillantController {
                 </div>
 
                 <p style="color: #718096; font-size: 14px;">
-                    Ce lien expirera dans 60 minutes.<br>
+                    Ce lien expirera dans 15 minutes.<br>
                     Si vous n'avez pas demandé cette réinitialisation, veuillez ignorer cet email.
                 </p>
 
@@ -310,6 +440,12 @@ public class SurveillantController {
         );
 
         return ResponseEntity.ok("Email envoyé.");
+    }
+    @PostMapping("/verify-reset-token")
+    public ResponseEntity<?> verifyResetToken(@RequestBody Map<String, String> payload) {
+        String token = payload.get("token");
+        boolean isValid = JwtUtil.validateToken(token);
+        return ResponseEntity.ok(Map.of("valid", isValid));
     }
 
 

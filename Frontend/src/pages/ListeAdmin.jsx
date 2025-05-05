@@ -7,6 +7,7 @@ const ListeAdmin = () => {
     const [nom, setNom] = useState("");
     const [prenom, setPrenom] = useState("");
     const [email, setEmail] = useState("");
+    const [message, setMessage] = useState(null);
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [modalOpen, setModalOpen] = useState(false);
@@ -63,6 +64,8 @@ const ListeAdmin = () => {
                 chargerAdmins();
             })
             .catch((error) => {
+                setMessage(error.response.data);
+                setTimeout(() => setMessage(null), 3000);
                 console.error("Erreur lors de la modification de l'admin :", error);
             });
     };
@@ -165,6 +168,7 @@ const ListeAdmin = () => {
                                 onChange={(e) => setConfirmPassword(e.target.value)}
                                 className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
                             />
+                            {message && <p className="text-center text-red-600 font-medium">{message}</p>}
                             <div className="flex justify-between mt-4">
                                 <button
                                     type="button"

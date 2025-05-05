@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import api from './../api/axios';
-
+import LoginLoadin from '../components/LoginLoadin';
 function AdminLogin() {
     useEffect(()=>{
     localStorage.clear();
@@ -69,9 +69,11 @@ function AdminLogin() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                 />
+
+                <a href="/adminOublier" className='text-red-500' >Mot de passe oublié?</a>
                 
                 {/* Message d'erreur */}
-                {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+                {error && <p className="text-red-700 text-sm mb-4">{error}</p>}
                 
                 {/* Bouton de connexion */}
                 <button
@@ -81,9 +83,9 @@ function AdminLogin() {
                     Se connecter
                 </button>
     
+            {laoding && <p><LoginLoadin/></p>}
 
             </div>
-            {laoding && <p>loading...</p>}
         </div>
     );
     
