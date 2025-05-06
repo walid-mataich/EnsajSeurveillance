@@ -43,6 +43,13 @@ import MatieresPage from "./pages/MatieresPage";
 import TestChoix from "./components/TestChoix";
 import MonHistorique from "./components/MonHistorique";
 import HistoriqueSurv from "./pages/HistoriqueSurv";
+import MotpassOublier from "./pages/SurvMotpassOublier";
+import ResetPassword from "./pages/SurvMotpasseReset";
+import SurvResetPasswordGuard from "./components/SurvResetPasswordGuard";
+import AdminForgotPassword from './pages/AdminMPOublier';
+import AdminResetPassword from './pages/AdminMPReset';
+import AdminResetPasswordGuard from "./components/AdminResetPasswordGuard";
+
 import Besoin from "./components/Besoin";
 
 // Route privée pour administrateur : redirige vers /loginadmin si pas de token
@@ -64,7 +71,7 @@ const AdminPrivateRoute = ({ children }) => {
         console.log("Validation token OK", response.data);
         setIsValid(true);
       } catch (error) {
-        console.error("Token invalide ou erreur API:", error);
+        console.error('Token invalide ou erreur API:', error);
         localStorage.removeItem("jwtTokenadmin");
         setIsValid(false);
       }
@@ -101,7 +108,7 @@ const SurvPrivateRoute = ({ children }) => {
         console.log("Validation token surveillant OK", response.data);
         setIsValid(true);
       } catch (error) {
-        console.error("Token surveillant invalide ou erreur API:", error);
+        console.error('Token surveillant invalide ou erreur API:', error);
         localStorage.removeItem("jwtTokensurv");
         setIsValid(false);
       }
@@ -126,6 +133,7 @@ const router = createBrowserRouter(
       {/* Pages de login */}
       <Route path="/loginadmin" element={<AdminLogin />} />
       <Route path="/loginsurv" element={<SurvLogin />} />
+
 
       {/* Routes protégées pour administrateur */}
       <Route
@@ -177,9 +185,25 @@ const router = createBrowserRouter(
       <Route path="/log" element={<Log />} />
       <Route path="/about" element={<About />} />
       <Route path="/contact" element={<Contact />} />
+      <Route path="/survOublier" element={<MotpassOublier />} />
+      <Route path="/adminOublier" element={<AdminForgotPassword/>} />
+      <Route path="/adminResetMp" element={
+        <AdminResetPasswordGuard>
+          <AdminResetPassword />
+          </AdminResetPasswordGuard>} />
+      <Route
+  path="/survResetMp"
+  element={
+    <SurvResetPasswordGuard>
+      <ResetPassword />
+    </SurvResetPasswordGuard>
+  }
+/>
+
     </>
   )
 );
+
 
 function App() {
   return <RouterProvider router={router} />;

@@ -41,9 +41,23 @@ public class MailService {
             e.printStackTrace();
         }
     }
+    public void sendHtmlMail(String to, String subject, String htmlContent) {
+        MimeMessage message = mailSender.createMimeMessage();
+
+        try {
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(htmlContent, true); // Le 'true' indique que c'est du HTML
+
+            mailSender.send(message);
+        } catch (MessagingException e) {
+            throw new RuntimeException("Erreur lors de l'envoi de l'email", e);
+        }
+    }
 
     @Async
-    public void sendHtmlMail(String to, String fullName, String planningUrl) {
+    public void sendHtmlMail2(String to, String fullName, String planningUrl) {
         try {
             if (to == null || to.isEmpty()) {
                 System.out.println("Email non envoyé : destinataire vide.");

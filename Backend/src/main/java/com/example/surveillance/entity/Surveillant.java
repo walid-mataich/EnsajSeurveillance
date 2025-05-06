@@ -29,7 +29,9 @@ public class Surveillant {
     private String nom;
 
 
-    @Email(message = "cet email est nom valide")
+    @Email(message = "cet email est non valide")
+    @NotBlank(message = "L'email est obligatoire")
+    @Column(unique = true)
     private String email;
 
     private Boolean tkw;

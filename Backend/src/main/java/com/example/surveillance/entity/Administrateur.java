@@ -26,7 +26,9 @@ public class Administrateur {
     @NotBlank(message = "le prenom de profile est obligatoire")
     private String prenom;
 
-    @Email(message = "cet email est nom valide")
+    @Email(message = "cet email est non valide")
+    @NotBlank(message = "L'email est obligatoire")
+    @Column(unique = true)
     private String email;
 
     @NotBlank(message = "Le mot de passe ne peut pas être vide")
